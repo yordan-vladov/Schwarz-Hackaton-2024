@@ -36,7 +36,6 @@ export default function TabOneScreen() {
     response.then((data: void | { error: string }) => {
       if (data) {
         console.log(data.error);
-        console.log(signIn)
       } else {
         console.log("Successful");
         router.navigate("(tabs)");

@@ -1,5 +1,6 @@
+import { useAuth } from "@/providers/AuthProvider";
 import Icon from "../../components/Icon";
-import { Link, Stack } from "expo-router";
+import { Link, Redirect, Stack } from "expo-router";
 
 const headerProfileButton = () => {
   return (
@@ -10,14 +11,19 @@ const headerProfileButton = () => {
 };
 
 function AuthLayout() {
-  return (
+  const { user } = useAuth();
+
+  return user ? (
     <Stack>
         <Stack.Screen
-          name="products"
+          name="index"
           options={{
-            title: "All Products",
+            title: "ALL PRODUCTS",
             headerRight: headerProfileButton,
-
+            headerTitleAlign: "center",
+            headerTitleStyle: {
+              fontFamily: "JosefineSansBold"
+            },
             headerStyle: {
               backgroundColor: "#009FB7",
             },
@@ -57,6 +63,8 @@ function AuthLayout() {
           }}
         />
       </Stack>
+  ) : (
+    <Redirect href="/(auth)/sign-in" />
   );
 }
 

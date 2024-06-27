@@ -5,7 +5,6 @@ import { Text } from "react-native";
 const Index = () => {
   const { user, loading } = useAuth();
 
-  return <Redirect href="(tabs)/products"/>
   if(!loading) {
     return user ? (
       <Redirect href="(tabs)" />
