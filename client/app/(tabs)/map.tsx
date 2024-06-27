@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-} from "react-native";
+import { View, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
 import {
   GestureHandlerRootView,
   GestureDetector,
@@ -20,18 +15,13 @@ import Icon from "../../components/Icon";
 import { useAxios } from "../../services/api";
 import { useAuth } from "../../providers/AuthProvider";
 import axios from "axios";
+import qs from "qs";
+import { consumables } from "@/constants/Categories";
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get("window");
 const gridRows = 20;
 const gridCols = 40;
-const squareSize = screenWidth / gridCols * 0.8;
-const categoryColors: { [key: string]: string } = {
-  Entry: "#98ff98",
-  Exit: "#ff5c5c",
-  Риба: "#caf0f8",
-  Плодове: "#d7a1f9",
-  Месо: "",
-};
+const squareSize = (screenWidth / gridCols) * 0.8;
 
 export default function ZoomableMap() {
   const scale = useSharedValue(1);
@@ -50,6 +40,9 @@ export default function ZoomableMap() {
   }
 
   const [mapObjects, setMapObjects] = useState<MapObject | undefined>();
+  const [pathObjects, setPathObjects] = useState<
+    { pathfind: any[] } | undefined
+  >();
 
   const { refreshAccessToken, signOut } = useAuth();
 
@@ -58,8 +51,32 @@ export default function ZoomableMap() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = axiosInstance.get("store/1");
-        setMapObjects((await response).data);
+        let products = [
+          "P1",
+          "P2",
+          "P3",
+          "P4",
+          "P5",
+          "P6",
+          "P7",
+          "P8",
+          "P9",
+          "P10",
+          "P11",
+        ];
+        const pathDataPromise = axiosInstance.get("pathfind/1", {
+          params: { products: products.join(",") },
+          paramsSerializer: (params) => qs.stringify(params),
+        });
+        const productDataPromise = axiosInstance.get("store/1", {});
+        const [pathData, productData] = await Promise.all([
+          pathDataPromise,
+          productDataPromise,
+        ]);
+
+        setPathObjects(pathData.data);
+        setMapObjects(productData.data);
+        console.log(pathData.data);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
           console.error(error.response.data);
@@ -139,13 +156,14 @@ export default function ZoomableMap() {
     ));
   };
 
-  const drawRedSquares = () => {
+  const drawSquares = () => {
     let squares: React.JSX.Element[] = [];
 
     if (mapObjects && mapObjects.itemDetails) {
       for (let y = 0; y < gridRows + 1; y++) {
         for (let x = 0; x < gridCols + 1; x++) {
-          const item = mapObjects.itemDetails[x] && mapObjects.itemDetails[x][y];
+          const item =
+            mapObjects.itemDetails[x] && mapObjects.itemDetails[x][y];
           if (item) {
             squares.push(
               <View
@@ -153,7 +171,18 @@ export default function ZoomableMap() {
                 style={{
                   width: squareSize,
                   height: squareSize,
-                  backgroundColor: categoryColors[item.category] || "",
+                  backgroundColor:
+                    item.category === "Entry"
+                      ? "#98ff98"
+                      : item.category === "Exit"
+                      ? "#ff5c5c"
+                      : item.category === "BlockedPath"
+                      ? "red"
+                      : item.category === "Checkout"
+                      ? "yellow"
+                      : consumables.includes(item.category)
+                      ? "#d7a1f9"
+                      : "#caf0f8",
                   position: "absolute",
                   bottom: y * squareSize - squareSize / 2,
                   left: x * squareSize - squareSize / 2,
@@ -172,24 +201,7 @@ export default function ZoomableMap() {
 
   const drawPath = () => {
     let lines: React.JSX.Element[] = [];
-
-    const positions = [
-      { row: 6, col: 1 },
-      { row: 6, col: 2 },
-      { row: 6, col: 3 },
-      { row: 6, col: 4 },
-      { row: 7, col: 5 },
-      { row: 7, col: 6},
-      { row: 7, col: 7},
-      { row: 6, col: 6 },
-      { row: 6, col: 7},
-      { row: 5, col: 8},
-      { row: 5, col: 9},
-      { row: 5, col: 10},
-      { row: 5, col: 11},
-      { row: 4, col: 11},
-      { row: 4, col: 12},
-    ];
+    let circles: React.JSX.Element[] = [];
 
     const orientationStyles = StyleSheet.create({
       horizontal: {
@@ -203,92 +215,115 @@ export default function ZoomableMap() {
       diagonal: {
         width: Math.sqrt(2 * Math.pow(squareSize, 2)),
         height: squareSize / 4,
-      }
+      },
     });
 
     type RotateType = { rotate: string };
 
-    positions.forEach((pos, index) => {
-      if (index + 1 !== positions.length) {
-        const nextPos = positions[index + 1];
-        let style = {};
-        let rotate: RotateType = { rotate: "0deg"};
-        const anchorX = Math.sqrt(2*Math.pow(squareSize, 2)) / 2;
-        const anchorY = squareSize / 64;
+    if (pathObjects) {
+      pathObjects.pathfind.forEach((segment, segmentIndex) => {
+        const segmentPositions = [segment.start, ...segment.path, segment.end];
 
-        // HORIZONTAL LINES
-        if (nextPos.row === pos.row) {
-            if(nextPos.col > pos.col) {
-              style = {
-                ...orientationStyles.horizontal,
-                bottom: pos.row * (squareSize) - squareSize / 8,
-                left: pos.col * squareSize,
-              };
+        segmentPositions.forEach((pos, index) => {
+          if (index + 1 !== segmentPositions.length) {
+            const nextPos = segmentPositions[index + 1];
+            let style = {};
+            let rotate: RotateType = { rotate: "0deg" };
+            const anchorX = Math.sqrt(2 * Math.pow(squareSize, 2)) / 2;
+            const anchorY = squareSize / 64;
+
+            // HORIZONTAL LINES
+            if (nextPos.y === pos.y) {
+              if (nextPos.x > pos.x) {
+                style = {
+                  ...orientationStyles.horizontal,
+                  bottom: pos.y * squareSize - squareSize / 8,
+                  left: pos.x * squareSize,
+                };
+              } else {
+                style = {
+                  ...orientationStyles.horizontal,
+                  bottom: pos.y * squareSize - squareSize / 8,
+                  left: nextPos.x * squareSize,
+                };
+              }
+              // VERTICAL LINES
+            } else if (nextPos.x === pos.x) {
+              if (nextPos.y > pos.y) {
+                style = {
+                  ...orientationStyles.vertical,
+                  bottom: pos.y * squareSize - squareSize / 64,
+                  left: pos.x * squareSize - squareSize / 8,
+                };
+              } else {
+                style = {
+                  ...orientationStyles.vertical,
+                  bottom: nextPos.y * squareSize - squareSize / 64,
+                  left: pos.x * squareSize - squareSize / 8,
+                };
+              }
+              // DIAGONAL LINES
             } else {
               style = {
-                ...orientationStyles.horizontal,
-                bottom: pos.row * squareSize - squareSize / 8,
-                left: nextPos.col * squareSize,
+                ...orientationStyles.diagonal,
+                bottom: pos.y * squareSize - squareSize / 8,
+                left: pos.x * squareSize,
               };
-            }
-        // VERTICAL LINES
-        } else if (nextPos.col === pos.col) {
-            if(nextPos.row > pos.row) {
-              style = {
-                ...orientationStyles.vertical,
-                bottom: pos.row * squareSize - squareSize / 64,
-                left: pos.col * squareSize  - squareSize / 8,
-              };
-            } else {
-              style = {
-                ...orientationStyles.vertical,
-                bottom: nextPos.row * squareSize - squareSize / 64,
-                left: pos.col * squareSize  - squareSize / 8,
-              };
-            }
-        // DIAGONAL LINES
-        } else {
-          style = {
-            ...orientationStyles.diagonal,
-            bottom: pos.row * squareSize - squareSize / 8,
-            left: pos.col * squareSize,
-          };
 
-          if (nextPos.row > pos.row && nextPos.col > pos.col) {
-            rotate = { rotate: `-45deg` }
-          } else if (nextPos.row > pos.row && nextPos.col < pos.col) {
-            rotate = { rotate: `-135deg` }
-          } else if (nextPos.row < pos.row && nextPos.col > pos.col) {
-            rotate = { rotate: `45deg` }
-          } else if (nextPos.row < pos.row && nextPos.col < pos.col) {
-            rotate = { rotate: `135deg` }
+              if (nextPos.y > pos.y && nextPos.x > pos.x) {
+                rotate = { rotate: `-45deg` };
+              } else if (nextPos.y > pos.y && nextPos.x < pos.x) {
+                rotate = { rotate: `-135deg` };
+              } else if (nextPos.y < pos.y && nextPos.x > pos.x) {
+                rotate = { rotate: `45deg` };
+              } else if (nextPos.y < pos.y && nextPos.x < pos.x) {
+                rotate = { rotate: `135deg` };
+              }
+            }
+
+            lines.push(
+              <View
+                key={`line-${segmentIndex}-${index}`}
+                style={[
+                  style,
+                  {
+                    borderRadius: 5,
+                    backgroundColor: "green",
+                    position: "absolute",
+                    transform: [
+                      { translateX: -anchorX },
+                      { translateY: -anchorY },
+                      rotate,
+                      { translateY: anchorY },
+                      { translateX: anchorX },
+                    ],
+                  },
+                ]}
+              />
+            );
           }
-        }
+        });
 
-        lines.push(
+        // Draw yellow circle at end position
+        const endPos = segment.end;
+        circles.push(
           <View
-            key={`line-${index}`}
-            style={[
-              style,
-              {
-                borderRadius: 5,
-                backgroundColor: "green",
-                position: "absolute",
-                transform: [
-                  { translateX: -anchorX },       
-                  { translateY: -anchorY },
-                  rotate,
-                  { translateY: anchorY },
-                  { translateX: anchorX },
-                ],
-              },
-            ]}
+            key={`circle-${segmentIndex}`}
+            style={{
+              width: squareSize / 2,
+              height: squareSize / 2,
+              backgroundColor: "yellow",
+              borderRadius: squareSize / 4,
+              position: "absolute",
+              bottom: endPos.y * squareSize - squareSize / 4,
+              left: endPos.x * squareSize - squareSize / 4,
+            }}
           />
         );
-      }
-    });
+      });
 
-    return lines;
+      return [...lines, ...circles];
+    }
   };
 
   return (
@@ -301,8 +336,8 @@ export default function ZoomableMap() {
             <Animated.View style={[styles.content, animatedStyle]}>
               <View style={{ ...styles.innerView }}>
                 {drawRows()}
+                {drawSquares()}
                 {drawPath()}
-                {drawRedSquares()}
               </View>
             </Animated.View>
             <TouchableOpacity style={styles.recenter} onPress={handleRecenter}>

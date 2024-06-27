@@ -1,6 +1,7 @@
 import { useAuth } from "@/providers/AuthProvider";
 import Icon from "../../components/Icon";
 import { Link, Redirect, Stack } from "expo-router";
+import { CartProvider } from "@/providers/CartProvider";
 
 const headerProfileButton = () => {
   return (
@@ -15,6 +16,7 @@ function AuthLayout() {
 
   return user ? (
     <Stack>
+      <CartProvider>
         <Stack.Screen
           name="index"
           options={{
@@ -22,7 +24,7 @@ function AuthLayout() {
             headerRight: headerProfileButton,
             headerTitleAlign: "center",
             headerTitleStyle: {
-              fontFamily: "JosefineSansBold"
+              fontFamily: "JosefineSansBold",
             },
             headerStyle: {
               backgroundColor: "#009FB7",
@@ -52,17 +54,19 @@ function AuthLayout() {
             headerTintColor: "#FCF7F8",
           }}
         />
-        <Stack.Screen
-          name="profile"
-          options={{
-            title: "Profile",
-            headerStyle: {
-              backgroundColor: "#009FB7",
-            },
-            headerTintColor: "#FCF7F8",
-          }}
-        />
-      </Stack>
+      </CartProvider>
+
+      <Stack.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          headerStyle: {
+            backgroundColor: "#009FB7",
+          },
+          headerTintColor: "#FCF7F8",
+        }}
+      />
+    </Stack>
   ) : (
     <Redirect href="/(auth)/sign-in" />
   );
