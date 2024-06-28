@@ -51,64 +51,68 @@ public class PathfindingService {
 
     public PathfindDto findPath(String[] products) {
 
-        long startTime = System.currentTimeMillis();
 
         String entrance = "EN";
+
         String[] goldenEggs = { "P107", "P310", "P204", "P19", "P279" };
+
         List<String> checkouts = new ArrayList<String>(exitToCheckoutsDistances.keySet());
+
         String exit = "EX";
 
-        CompletableFuture<ArrayList<String>> shortestRouteFuture = CompletableFuture.supplyAsync(() ->
-                routeOptimizer.findShortestRoute(entrance, exit, products, checkouts,
-                        shortestDistances, productToCheckoutDistances, entranceToProductsDistances, exitToCheckoutsDistances));
 
-        CompletableFuture<ArrayList<String>> shortestRouteWithGoldenEggFuture = shortestRouteFuture.thenApplyAsync(route ->
-                routeOptimizer.insertBestGoldenEgg(route, goldenEggs, shortestDistances));
+        // Find the shortest route using the nearest neighbor algorithm
+        ArrayList<String> shortestRoute = routeOptimizer.findShortestRoute(entrance, exit, products, checkouts,
+                shortestDistances, productToCheckoutDistances, entranceToProductsDistances, exitToCheckoutsDistances);
 
-        CompletableFuture<ArrayList<String>> optimizedRouteFuture = shortestRouteWithGoldenEggFuture.thenApplyAsync(route ->
-                routeOptimizer.twoOpt(route, shortestDistances, productToCheckoutDistances,
-                        entranceToProductsDistances, exitToCheckoutsDistances));
+        // Insert the best golden egg that increases the route distance minimally
+        shortestRoute = routeOptimizer.insertBestGoldenEgg(shortestRoute, goldenEggs, shortestDistances);
 
-        CompletableFuture<Integer> totalDistanceFuture = optimizedRouteFuture.thenApplyAsync(route ->
-                routeOptimizer.calculateRouteDistance(route, shortestDistances, productToCheckoutDistances,
-                        entranceToProductsDistances, exitToCheckoutsDistances));
+        // Optimize the route using 2-opt algorithm
+        shortestRoute = routeOptimizer.twoOpt(shortestRoute, shortestDistances, productToCheckoutDistances,
+                entranceToProductsDistances, exitToCheckoutsDistances);
 
-        ArrayList<String> optimizedRoute = shortestRouteWithGoldenEggFuture.join();
-        int totalDistance = totalDistanceFuture.join();
+        // Calculate the total distance of the optimized route
+        int totalDistance = routeOptimizer.calculateRouteDistance(shortestRoute, shortestDistances, productToCheckoutDistances,
+                entranceToProductsDistances, exitToCheckoutsDistances);
 
-        ArrayList<List<int[]>> shortestRoutePath = routeOptimizer.getShortestRoutePath(coordinateMatrix.extractMatrix(), optimizedRoute);
+        // Get the shortest route path
+        ArrayList<List<int[]>> shortestRoutePath = routeOptimizer.getShortestRoutePath(coordinateMatrix.extractMatrix(), shortestRoute);
 
-        long endTime = System.currentTimeMillis();
-        long elapsedTime = endTime - startTime;
-        System.out.println("Elapsed time: " + elapsedTime + " milliseconds");
-
+        // Convert the shortest route path to an array of TwoPointPathDto objects
         TwoPointPathDto[] pathfind = new TwoPointPathDto[shortestRoutePath.size()];
         for (int i = 0; i < shortestRoutePath.size(); i++) {
             List<int[]> path = shortestRoutePath.get(i);
 
+            // Create a new TwoPointPathDto object
             TwoPointPathDto twoPointPathDto = new TwoPointPathDto();
 
+            // Set the start point
             PointDto startPoint = new PointDto();
             startPoint.setX(path.get(0)[0]);
             startPoint.setY(path.get(0)[1]);
-            startPoint.setId(optimizedRoute.get(i)); // Set the ID
+            startPoint.setId(shortestRoute.get(i)); // Set the ID
             twoPointPathDto.setStart(startPoint);
 
+            // Set the end point
             PointDto endPoint = new PointDto();
             endPoint.setX(path.get(path.size() - 1)[0]);
             endPoint.setY(path.get(path.size() - 1)[1]);
-            endPoint.setId(optimizedRoute.get(i + 1)); // Set the ID
+            endPoint.setId(shortestRoute.get(i + 1)); // Set the ID
             twoPointPathDto.setEnd(endPoint);
 
+            // Set the path
             Point[] points = new Point[path.size() - 2];
             for (int j = 1; j < path.size() - 1; j++) {
                 points[j - 1] = new Point(path.get(j)[0], path.get(j)[1]);
             }
             twoPointPathDto.setPath(points);
 
+            // Add the TwoPointPathDto object to the array
             pathfind[i] = twoPointPathDto;
         }
 
+        // Create a PathfindDto object and set the pathfind field
         PathfindDto pathfindDto = PathfindDto.builder()
                 .distance(totalDistance)
                 .pathfind(pathfind)
