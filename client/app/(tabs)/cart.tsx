@@ -29,7 +29,7 @@ const Cart = () => {
               <Image source={{ uri: product.imageUri }} style={styles.image} />
               <View style={styles.info}>
                 <Text style={styles.productText}>{product.name}</Text>
-                <Text style={styles.price}>Цена 0.00 лв.</Text>
+                <Text style={styles.price}>Цена {product.price} лв.</Text>
               </View>
             </View>
             <TouchableOpacity

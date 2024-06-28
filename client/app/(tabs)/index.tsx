@@ -19,6 +19,7 @@ import { useAuth } from "@/providers/AuthProvider";
 interface Product {
   productId: string;
   name: string;
+  price: number;
   imageUri: string;
 }
 
