@@ -2,8 +2,9 @@
 # Finder
 ## Нужни инсталации
 1. PostgreSQL 16
-2. Maven
-3. NodeJs
+2. Java 17
+3. Maven
+4. NodeJs
 
 ## Подкарване на PostgreSQL
 За да може проекта да бъде стартиран трябва да има инициализирана база данни с името "hackathon".
