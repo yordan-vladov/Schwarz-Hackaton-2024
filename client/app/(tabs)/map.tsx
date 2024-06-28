@@ -354,7 +354,7 @@ export default function ZoomableMap() {
               </Animated.View>
             ) : (
               <View>
-                <Text>ЗАРЕЖДАНЕ...</Text>
+                <Text style={styles.distance}>ЗАРЕЖДАНЕ...</Text>
               </View>
             )}
 
@@ -371,7 +371,7 @@ export default function ZoomableMap() {
           </View>
         </GestureDetector>
         <ScrollView style={styles.lowerHalf}>
-          {cart.map((product) => (
+          {pathObjects.sorted.map((product) => (
             <View key={product.productId} style={styles.product}>
               <View style={styles.productData}>
                 <Image
@@ -380,7 +380,6 @@ export default function ZoomableMap() {
                 />
                 <View style={styles.info}>
                   <Text style={styles.productText}>{product.name}</Text>
-                  <Text style={styles.price}>Цена: 0.00 лв.</Text>
                 </View>
               </View>
             </View>
@@ -415,7 +414,7 @@ const styles = StyleSheet.create({
   },
   distance: {
     top: 30,
-    fontFamily: "JosefineSansBold"
+    fontFamily: "JosefineSansBold",
   },
   product: {
     width: "95%",

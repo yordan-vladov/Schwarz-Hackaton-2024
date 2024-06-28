@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/hackathon
     username: postgres
-    password: 1234
+    password: 0549
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -21,7 +21,7 @@ spring:
 server:
   error:
     include-message: always
-  port: 8080
+  port: 8888
 
 application:
   security:

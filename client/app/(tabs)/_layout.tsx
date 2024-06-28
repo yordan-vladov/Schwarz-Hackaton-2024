@@ -6,7 +6,7 @@ import { CartProvider } from "@/providers/CartProvider";
 const headerProfileButton = () => {
   return (
     <Link href="profile" style={{ marginRight: 20 }}>
-      <Icon library="FontAwesome" name="user" size={24} color="#FCF7F8" />
+      <Icon library="FontAwesome" name="user" size={26} color="#FCF7F8" />
     </Link>
   );
 };
