@@ -29,7 +29,6 @@ export default function TabOneScreen() {
       if (data) {
         Alert.alert(data.error);
       } else {
-        console.log("Successful");
         router.navigate("(tabs)");
       }
     });
@@ -40,7 +39,6 @@ export default function TabOneScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* <View style={styles.circle} /> */}
         <View style={styles.form}>
           <Text style={styles.title}>
             F
