@@ -1,9 +1,16 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
+// Define the product type
+interface Product {
+  id: string;
+  name: string;
+  imageURI: string;
+}
+
 // Define the shape of the context value
 interface CartContextValue {
-  cart: string[];
-  addProduct: (productId: string) => void;
+  cart: Product[];
+  addProduct: (product: Product) => void;
   removeProduct: (productId: string) => void;
 }
 
@@ -17,16 +24,16 @@ interface CartProviderProps {
 
 // Cart provider component
 export function CartProvider({ children }: CartProviderProps) {
-  const [cart, setCart] = useState<string[]>([]);
+  const [cart, setCart] = useState<Product[]>([]);
 
   // Add a product to the cart
-  const addProduct = (productId: string) => {
-    setCart((prevCart) => [...prevCart, productId]);
+  const addProduct = (product: Product) => {
+    setCart((prevCart) => [...prevCart, product]);
   };
 
   // Remove a product from the cart
   const removeProduct = (productId: string) => {
-    setCart((prevCart) => prevCart.filter((id) => id !== productId));
+    setCart((prevCart) => prevCart.filter((product) => product.id !== productId));
   };
 
   // Context value to be provided
