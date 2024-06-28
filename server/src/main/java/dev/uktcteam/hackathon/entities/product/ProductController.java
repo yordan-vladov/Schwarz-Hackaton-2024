@@ -29,16 +29,4 @@ public class ProductController {
         return productService.getAllProductsGroupedByCategories();
     }
 
-//    @PutMapping("/{productId}")
-//    public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestBody ProductDto productDto) {
-//        Product updatedProduct = productService.updateProduct(productId, productDto);
-//        return ResponseEntity.ok(updatedProduct);
-//    }
-//
-//    @DeleteMapping("/{productId}")
-//    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
-//        productService.deleteProduct(productId);
-//        return ResponseEntity.noContent().build();
-//    }
-
 }

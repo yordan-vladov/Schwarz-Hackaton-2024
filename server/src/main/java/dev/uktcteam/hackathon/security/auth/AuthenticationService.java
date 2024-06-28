@@ -67,7 +67,6 @@ public class AuthenticationService {
                 .build();
     }
 
-    //For registering other roles
     public AuthenticationResponse registerWithRole(RegisterRequest request) {
 
         if (request.getUsername().length() < 3) {
@@ -130,7 +129,7 @@ public class AuthenticationService {
     public RefreshTokenResponse refreshToken(HttpServletRequest request) {
         final String authHeader = request.getHeader("Authorization");
         final String refreshToken;
-        final String username; //User Email in this case (var name is username for consistency)
+        final String username;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return null;
         }

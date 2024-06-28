@@ -15,10 +15,8 @@ public class CoordinateMatrix {
     private HashMapUtils hashMapUtils;
 
     public String[][] extractMatrix() {
-        // Define the size of the matrix
         String[][] matrix = new String[41][21];
 
-        // Initialize the matrix with empty strings
         for (int i = 0; i < 41; i++) {
             for (int j = 0; j < 21; j++) {
                 matrix[i][j] = "";
@@ -30,19 +28,14 @@ public class CoordinateMatrix {
         String csvSplitBy = ",";
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
-            // Skip the header line
             br.readLine();
 
-            // Read and process each line
             while ((line = br.readLine()) != null) {
-                // Use comma as separator
                 String[] data = line.split(csvSplitBy);
 
-                // Extract x and y coordinates
                 int x = Integer.parseInt(data[1]);
                 int y = Integer.parseInt(data[2]);
 
-                // Place the value in the matrix
                 if (x >= 0 && x < 41 && y >= 0 && y < 21) {
                     matrix[x][y] = data[0];
                 }
@@ -54,7 +47,6 @@ public class CoordinateMatrix {
         return matrix;
     }
 
-    // Test the BFS algorithm
     public ArrayList<Coordinate> findRouteBetween(String start, String end,
                                                   HashMap<Coordinate, Integer> shortestDistances,
                                                   HashMap<String, Coordinate> coordinates) {
@@ -91,7 +83,6 @@ public class CoordinateMatrix {
         return routeCoordinates;
     }
 
-    // gleda dali zapochva nesho s P
     public HashMap<String, int[]> findProducts(String[][] matrix) {
         HashMap<String, int[]> products = new HashMap<>();
 
@@ -106,7 +97,6 @@ public class CoordinateMatrix {
         return products;
     }
 
-    // gleda dali zapochva nesho s S ili CA
     public HashMap<String, int[]> findCheckouts(String[][] matrix) {
         HashMap<String, int[]> checkouts = new HashMap<>();
 
@@ -121,7 +111,6 @@ public class CoordinateMatrix {
         return checkouts;
     }
 
-    // gleda dali zapochva nesho s EN
     public int[] findEntrance(String[][] matrix) {
         for (int i = 0; i < 41; i++) {
             for (int j = 0; j < 21; j++) {
@@ -133,7 +122,6 @@ public class CoordinateMatrix {
         return null;
     }
 
-    // gleda dali zapochva nesho s EX
     public int[] findExit(String[][] matrix) {
         for (int i = 0; i < 41; i++) {
             for (int j = 0; j < 21; j++) {
@@ -145,7 +133,6 @@ public class CoordinateMatrix {
         return null;
     }
 
-    // Polzva samo pri suzdavane na faila pri namirane na nai-kratki raztoqniq
     public int bfs(String[][] matrix, int[] start, int[] end) {
         int[] dx = { 0, 0, 1, -1, 1, 1, -1, -1 };
         int[] dy = { 1, -1, 0, 0, 1, -1, 1, -1 };
@@ -191,20 +178,18 @@ public class CoordinateMatrix {
             }
             distance++;
         }
-        return -1; // Return -1 if no path found
+        return -1;
     }
 
-    // vrushta putq na raztoqniqta a ne kato normalnoto bfs koeto vrushta samo
-    // raztoqnie
     public List<int[]> bfsWithPath(String[][] matrix, int[] start, int[] end) {
         int[] dx = { 0, 0, 1, -1, 1, 1, -1, -1 };
         int[] dy = { 1, -1, 0, 0, 1, -1, 1, -1 };
         boolean[][] visited = new boolean[41][21];
         Queue<int[]> queue = new LinkedList<>();
-        Map<int[], int[]> parent = new HashMap<>(); // Tracks the parent of each node
+        Map<int[], int[]> parent = new HashMap<>();
         queue.add(start);
         visited[start[0]][start[1]] = true;
-        parent.put(start, null); // Start has no parent
+        parent.put(start, null);
         boolean fromProduct = matrix[start[0]][start[1]].startsWith("P");
         boolean checkoutPassed = matrix[start[0]][start[1]].startsWith("S")
                 || matrix[start[0]][start[1]].startsWith("CA");
@@ -240,10 +225,9 @@ public class CoordinateMatrix {
             }
             fromProduct = false;
         }
-        return null; // Return null if no path found
+        return null;
     }
 
-    // spomagatelen metod da se vurne nai-kratkiq marshryt
     public List<int[]> reconstructPath(Map<int[], int[]> parent, int[] start, int[] end) {
         List<int[]> path = new ArrayList<>();
         for (int[] at = end; at != null; at = parent.get(at)) {
@@ -253,7 +237,6 @@ public class CoordinateMatrix {
         return path;
     }
 
-    // namira nai-kratkiq put mejdu vsichki dvoiki produkti
     public HashMap<Pair, Integer> findShortestDistancesBetweenProducts(String[][] matrix) {
         HashMap<String, int[]> products = findProducts(matrix);
         HashMap<Pair, Integer> distances = new HashMap<>();
@@ -276,7 +259,6 @@ public class CoordinateMatrix {
         return distances;
     }
 
-    // namira nai-kratkiq put mejdu produktite i checkouts
     public HashMap<Pair, Integer> findShortestDistancesBetweenProductsAndCheckouts(String[][] matrix) {
         HashMap<String, int[]> products = findProducts(matrix);
         HashMap<String, int[]> checkouts = findCheckouts(matrix);
@@ -298,7 +280,6 @@ public class CoordinateMatrix {
         return distances;
     }
 
-    // namira nai-kratkiq put ot vhoda do produktite
     public HashMap<String, Integer> findShortestDistancesFromEntranceToProducts(String[][] matrix) {
         int[] entrance = findEntrance(matrix);
         HashMap<String, int[]> products = findProducts(matrix);
@@ -318,7 +299,6 @@ public class CoordinateMatrix {
         return distances;
     }
 
-    // namira nai-kratkiq put ot izhoda do checkouts
     public HashMap<String, Integer> findShortestDistancesFromExitToCheckouts(String[][] matrix) {
         int[] exit = findExit(matrix);
         HashMap<String, int[]> checkouts = findCheckouts(matrix);
@@ -338,7 +318,6 @@ public class CoordinateMatrix {
         return distances;
     }
 
-    // pravi failovete s nai-kratkite raztoqniq
     public void saveRoutesToFiles() {
         String[][] matrix = extractMatrix();
 
@@ -359,7 +338,6 @@ public class CoordinateMatrix {
     }
 
     public void main(String[] args) {
-        // testBfs();
         saveRoutesToFiles();
     }
 }
