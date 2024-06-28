@@ -1,15 +1,10 @@
 import React, { useEffect, useState } from "react";
-<<<<<<< Updated upstream
 import { View, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
-=======
-import { View, StyleSheet, Dimensions, TouchableOpacity, Image, Text, ScrollView } from "react-native";
->>>>>>> Stashed changes
 import {
   GestureHandlerRootView,
   GestureDetector,
   Gesture,
 } from "react-native-gesture-handler";
-import { FontAwesome } from "@expo/vector-icons";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -27,16 +22,6 @@ const { height: screenHeight, width: screenWidth } = Dimensions.get("window");
 const gridRows = 20;
 const gridCols = 40;
 const squareSize = (screenWidth / gridCols) * 0.8;
-<<<<<<< Updated upstream
-=======
-const categoryColors: { [key: string]: string } = {
-  Entry: "#98ff98",
-  Exit: "#ff5c5c",
-  Риба: "#caf0f8",
-  Плодове: "#d7a1f9",
-  Месо: "",
-};
->>>>>>> Stashed changes
 
 export default function ZoomableMap() {
   const scale = useSharedValue(1);
@@ -509,28 +494,7 @@ export default function ZoomableMap() {
 
   const drawPath = () => {
     let lines: React.JSX.Element[] = [];
-<<<<<<< Updated upstream
     let circles: React.JSX.Element[] = [];
-=======
-
-    const positions = [
-      { row: 6, col: 1 },
-      { row: 6, col: 2 },
-      { row: 6, col: 3 },
-      { row: 6, col: 4 },
-      { row: 7, col: 5 },
-      { row: 7, col: 6 },
-      { row: 7, col: 7 },
-      { row: 6, col: 6 },
-      { row: 6, col: 7 },
-      { row: 5, col: 8 },
-      { row: 5, col: 9 },
-      { row: 5, col: 10 },
-      { row: 5, col: 11 },
-      { row: 4, col: 11 },
-      { row: 4, col: 12 },
-    ];
->>>>>>> Stashed changes
 
     const orientationStyles = StyleSheet.create({
       horizontal: {
@@ -549,7 +513,6 @@ export default function ZoomableMap() {
 
     type RotateType = { rotate: string };
 
-<<<<<<< Updated upstream
     if (pathObjects) {
       pathObjects.pathfind.forEach((segment, segmentIndex) => {
         const segmentPositions = [segment.start, ...segment.path, segment.end];
@@ -631,62 +594,6 @@ export default function ZoomableMap() {
                 ]}
               />
             );
-=======
-    positions.forEach((pos, index) => {
-      if (index + 1 !== positions.length) {
-        const nextPos = positions[index + 1];
-        let style = {};
-        let rotate: RotateType = { rotate: "0deg" };
-        const anchorX = Math.sqrt(2 * Math.pow(squareSize, 2)) / 2;
-        const anchorY = squareSize / 64;
-
-        // HORIZONTAL LINES
-        if (nextPos.row === pos.row) {
-          if (nextPos.col > pos.col) {
-            style = {
-              ...orientationStyles.horizontal,
-              bottom: pos.row * squareSize - squareSize / 8,
-              left: pos.col * squareSize,
-            };
-          } else {
-            style = {
-              ...orientationStyles.horizontal,
-              bottom: pos.row * squareSize - squareSize / 8,
-              left: nextPos.col * squareSize,
-            };
-          }
-          // VERTICAL LINES
-        } else if (nextPos.col === pos.col) {
-          if (nextPos.row > pos.row) {
-            style = {
-              ...orientationStyles.vertical,
-              bottom: pos.row * squareSize - squareSize / 64,
-              left: pos.col * squareSize - squareSize / 8,
-            };
-          } else {
-            style = {
-              ...orientationStyles.vertical,
-              bottom: nextPos.row * squareSize - squareSize / 64,
-              left: pos.col * squareSize - squareSize / 8,
-            };
-          }
-          // DIAGONAL LINES
-        } else {
-          style = {
-            ...orientationStyles.diagonal,
-            bottom: pos.row * squareSize - squareSize / 8,
-            left: pos.col * squareSize,
-          };
-
-          if (nextPos.row > pos.row && nextPos.col > pos.col) {
-            rotate = { rotate: `-45deg` };
-          } else if (nextPos.row > pos.row && nextPos.col < pos.col) {
-            rotate = { rotate: `-135deg` };
-          } else if (nextPos.row < pos.row && nextPos.col > pos.col) {
-            rotate = { rotate: `45deg` };
-          } else if (nextPos.row < pos.row && nextPos.col < pos.col) {
-            rotate = { rotate: `135deg` };
->>>>>>> Stashed changes
           }
         });
 
@@ -694,7 +601,6 @@ export default function ZoomableMap() {
         const endPos = segment.end;
         circles.push(
           <View
-<<<<<<< Updated upstream
             key={`circle-${segmentIndex}`}
             style={{
               width: squareSize / 2,
@@ -705,24 +611,6 @@ export default function ZoomableMap() {
               bottom: endPos.y * squareSize - squareSize / 4,
               left: endPos.x * squareSize - squareSize / 4,
             }}
-=======
-            key={`line-${index}`}
-            style={[
-              style,
-              {
-                borderRadius: 5,
-                backgroundColor: "green",
-                position: "absolute",
-                transform: [
-                  { translateX: -anchorX },
-                  { translateY: -anchorY },
-                  rotate,
-                  { translateY: anchorY },
-                  { translateX: anchorX },
-                ],
-              },
-            ]}
->>>>>>> Stashed changes
           />
         );
       });
@@ -754,68 +642,9 @@ export default function ZoomableMap() {
             </TouchableOpacity>
           </View>
         </GestureDetector>
-        <ScrollView style={styles.lowerHalf}>
-          <View style={styles.product}>
-            <View style={styles.productData}>
-              <Image
-                source={{ uri: "https://via.placeholder.com/50" }}
-                style={styles.image}
-              />
-              <View style={styles.info}>
-                <Text style={styles.productText}>Product 1</Text>
-                <Text style={styles.price}>Price</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.deleteIcon}>
-              <FontAwesome name="check-circle" size={24} color="#009FB7" />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.product}>
-            <View style={styles.productData}>
-              <Image
-                source={{ uri: "https://via.placeholder.com/50" }}
-                style={styles.image}
-              />
-              <View style={styles.info}>
-                <Text style={styles.productText}>Product 2</Text>
-                <Text style={styles.price}>Price</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.deleteIcon}>
-              <FontAwesome name="check-circle" size={24} color="#009FB7" />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.product}>
-            <View style={styles.productData}>
-              <Image
-                source={{ uri: "https://via.placeholder.com/50" }}
-                style={styles.image}
-              />
-              <View style={styles.info}>
-                <Text style={styles.productText}>Product 3</Text>
-                <Text style={styles.price}>Price</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.deleteIcon}>
-              <FontAwesome name="check-circle" size={24} color="#009FB7" />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.product}>
-            <View style={styles.productData}>
-              <Image
-                source={{ uri: "https://via.placeholder.com/50" }}
-                style={styles.image}
-              />
-              <View style={styles.info}>
-                <Text style={styles.productText}>Product 4</Text>
-                <Text style={styles.price}>Price</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.deleteIcon}>
-              <FontAwesome name="check-circle" size={24} color="#009FB7" />
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+        <View style={styles.lowerHalf}>
+          {/* Other content for the lower half */}
+        </View>
       </GestureHandlerRootView>
     </SafeAreaView>
   );
@@ -824,49 +653,6 @@ export default function ZoomableMap() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  info: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  productData: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  productInfo: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  image: {
-    height: 50,
-    width: 50,
-  },
-  product: {
-    width: "95%",
-    height: "auto",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 10,
-    borderColor: "#009FB7",
-    borderWidth: 1,
-    marginBottom: 20,
-    display: "flex",
-    margin: 10,
-  },
-  productText: {
-    fontSize: 18,
-    color: "#009FB7",
-  },
-  price: {
-
-  },
-  deleteIcon: {
-    paddingHorizontal: 10,
   },
   gestureContainer: {
     flex: 1,
@@ -881,9 +667,7 @@ const styles = StyleSheet.create({
   },
   lowerHalf: {
     flex: 1,
-    backgroundColor: "#fcf7f8",
-    display: 'flex',
-    
+    backgroundColor: "#eee",
   },
   content: {
     width: "100%",
