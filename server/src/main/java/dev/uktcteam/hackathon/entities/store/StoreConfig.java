@@ -76,7 +76,7 @@ public class StoreConfig implements CommandLineRunner {
             } else if (productId.startsWith("P")) {
                 productRepository.findById(Long.parseLong(productId.substring(1))).ifPresent(itemCoordinate::setProduct);
             } else {
-                System.out.println("ERROR AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                System.out.println("ERROR ");
             }
 
             itemCoordinateRepository.save(itemCoordinate);

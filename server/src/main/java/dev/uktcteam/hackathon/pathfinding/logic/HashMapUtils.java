@@ -14,7 +14,7 @@ public class HashMapUtils {
 
     public void saveHashMapToFile(HashMap<?, ?> map, String filename) {
         JSONObject json = new JSONObject(map);
-        saveToFile(filename, json.toString()); // 4 is the number of spaces to indent
+        saveToFile(filename, json.toString());
     }
 
     public HashMap<String, Integer> extractDistanceHashMapFromFile(String filename) {

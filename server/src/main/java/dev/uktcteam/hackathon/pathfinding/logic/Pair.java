@@ -2,7 +2,6 @@ package dev.uktcteam.hackathon.pathfinding.logic;
 
 import java.util.Objects;
 
-//distance between products
 public class Pair {
     private final String first;
     private final String second;

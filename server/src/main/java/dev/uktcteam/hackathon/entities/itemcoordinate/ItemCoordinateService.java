@@ -26,6 +26,4 @@ public class ItemCoordinateService {
     public void deleteCoordinate(Long id) {
         itemCoordinateRepository.deleteById(id);
     }
-
-    // Add more methods as per your application's requirements
 }

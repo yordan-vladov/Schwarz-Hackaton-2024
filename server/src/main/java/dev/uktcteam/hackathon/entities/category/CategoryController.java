@@ -35,6 +35,4 @@ public class CategoryController {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
-
-    // Add more CRUD endpoints (PUT, GET by ID, etc.) as needed
 }

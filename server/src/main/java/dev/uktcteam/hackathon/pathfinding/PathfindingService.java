@@ -66,54 +66,43 @@ public class PathfindingService {
         String exit = "EX";
 
 
-        // Find the shortest route using the nearest neighbor algorithm
         ArrayList<String> shortestRoute = routeOptimizer.findShortestRoute(entrance, exit, products, checkouts,
                 shortestDistances, productToCheckoutDistances, entranceToProductsDistances, exitToCheckoutsDistances);
 
-        // Insert the best golden egg that increases the route distance minimally
         shortestRoute = routeOptimizer.insertBestGoldenEgg(shortestRoute, goldenEggs, shortestDistances);
 
-        // Optimize the route using 2-opt algorithm
         shortestRoute = routeOptimizer.twoOpt(shortestRoute, shortestDistances, productToCheckoutDistances,
                 entranceToProductsDistances, exitToCheckoutsDistances);
 
-        // Calculate the total distance of the optimized route
         int totalDistance = routeOptimizer.calculateRouteDistance(shortestRoute, shortestDistances, productToCheckoutDistances,
                 entranceToProductsDistances, exitToCheckoutsDistances);
 
-        // Get the shortest route path
         ArrayList<List<int[]>> shortestRoutePath = routeOptimizer.getShortestRoutePath(coordinateMatrix.extractMatrix(), shortestRoute);
 
-        // Convert the shortest route path to an array of TwoPointPathDto objects
         TwoPointPathDto[] pathfind = new TwoPointPathDto[shortestRoutePath.size()];
         for (int i = 0; i < shortestRoutePath.size(); i++) {
             List<int[]> path = shortestRoutePath.get(i);
 
-            // Create a new TwoPointPathDto object
             TwoPointPathDto twoPointPathDto = new TwoPointPathDto();
 
-            // Set the start point
             PointDto startPoint = new PointDto();
             startPoint.setX(path.get(0)[0]);
             startPoint.setY(path.get(0)[1]);
-            startPoint.setId(shortestRoute.get(i)); // Set the ID
+            startPoint.setId(shortestRoute.get(i));
             twoPointPathDto.setStart(startPoint);
 
-            // Set the end point
             PointDto endPoint = new PointDto();
             endPoint.setX(path.get(path.size() - 1)[0]);
             endPoint.setY(path.get(path.size() - 1)[1]);
-            endPoint.setId(shortestRoute.get(i + 1)); // Set the ID
+            endPoint.setId(shortestRoute.get(i + 1));
             twoPointPathDto.setEnd(endPoint);
 
-            // Set the path
             Point[] points = new Point[path.size() - 2];
             for (int j = 1; j < path.size() - 1; j++) {
                 points[j - 1] = new Point(path.get(j)[0], path.get(j)[1]);
             }
             twoPointPathDto.setPath(points);
 
-            // Add the TwoPointPathDto object to the array
             pathfind[i] = twoPointPathDto;
         }
 

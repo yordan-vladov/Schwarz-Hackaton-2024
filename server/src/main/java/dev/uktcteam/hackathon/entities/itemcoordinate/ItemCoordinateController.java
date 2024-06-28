@@ -35,6 +35,4 @@ public class ItemCoordinateController {
         itemCoordinateService.deleteCoordinate(id);
         return ResponseEntity.noContent().build();
     }
-
-    // Add more CRUD endpoints (PUT, GET by ID, etc.) as needed
 }

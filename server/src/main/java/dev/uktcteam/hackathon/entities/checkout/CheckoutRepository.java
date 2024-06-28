@@ -5,5 +5,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CheckoutRepository extends JpaRepository<Checkout, Long> {
-    // Add custom query methods if needed
 }

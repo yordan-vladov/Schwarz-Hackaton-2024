@@ -25,6 +25,4 @@ public class CategoryService {
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
     }
-
-    // Add more methods as per your application's requirements
 }
