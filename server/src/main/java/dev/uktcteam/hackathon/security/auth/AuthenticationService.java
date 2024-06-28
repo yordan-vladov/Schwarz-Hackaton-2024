@@ -17,6 +17,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.regex.Pattern;
+
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,23 @@ public class AuthenticationService {
 
 
     public AuthenticationResponse register(RegisterRequest request) {
+
+        if (request.getUsername().length() < 3) {
+            throw new IllegalArgumentException("Name must be at least 3 characters long");
+        }
+
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        Pattern emailPattern = Pattern.compile(emailRegex);
+        if (!emailPattern.matcher(request.getEmail()).matches()) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+
+        String passwordRegex = "^(?=.*[0-9])(?=.*[a-zA-Z]).{8,}$";
+        Pattern passwordPattern = Pattern.compile(passwordRegex);
+        if (!passwordPattern.matcher(request.getPassword()).matches()) {
+            throw new IllegalArgumentException("Invalid password format");
+        }
+
         User user = User.builder()
                 .name(request.getUsername())
                 .email(request.getEmail().toLowerCase())
@@ -50,6 +69,23 @@ public class AuthenticationService {
 
     //For registering other roles
     public AuthenticationResponse registerWithRole(RegisterRequest request) {
+
+        if (request.getUsername().length() < 3) {
+            throw new IllegalArgumentException("Name must be at least 3 characters long");
+        }
+
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        Pattern emailPattern = Pattern.compile(emailRegex);
+        if (!emailPattern.matcher(request.getEmail()).matches()) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+
+        String passwordRegex = "^(?=.*[0-9])(?=.*[a-zA-Z]).{8,}$";
+        Pattern passwordPattern = Pattern.compile(passwordRegex);
+        if (!passwordPattern.matcher(request.getPassword()).matches()) {
+            throw new IllegalArgumentException("Invalid password format");
+        }
+
         User user = User.builder()
                 .name(request.getUsername())
                 .email(request.getEmail().toLowerCase())

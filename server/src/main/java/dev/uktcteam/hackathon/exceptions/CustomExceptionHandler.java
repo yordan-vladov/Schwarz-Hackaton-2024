@@ -47,6 +47,16 @@ public class CustomExceptionHandler {
             );
         }
 
+        if (e instanceof  IllegalArgumentException){
+            problemDetail = ProblemDetail
+                    .forStatusAndDetail(
+                            HttpStatusCode.valueOf(403), e.getMessage());
+            problemDetail.setProperty(
+                    "access_denied", "Invalid input"
+            );
+        }
+
+
         e.printStackTrace();
 
         return problemDetail;
