@@ -29,7 +29,6 @@ export default function TabOneScreen() {
       if (data) {
         Alert.alert(data.error);
       } else {
-        console.log("Successful");
         router.navigate("(tabs)");
       }
     });

@@ -57,7 +57,6 @@ export default function App() {
       if (data) {
         Alert.alert(data.error);
       } else {
-        console.log("Successful");
         router.navigate("(tabs)");
       }
     });

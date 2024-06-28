@@ -80,7 +80,7 @@ export default function ZoomableMap() {
 
         setPathObjects(pathData.data);
         setMapObjects(productData.data);
-        console.log(pathData.data);
+
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
           console.error(error.response.data);
@@ -342,9 +342,11 @@ export default function ZoomableMap() {
           gesture={Gesture.Simultaneous(panGesture, pinchGesture)}
         >
           <View style={[styles.upperHalf, { height: screenWidth }]}>
-            <Text style={styles.distance}>
-              ДИСТАНЦИЯ: {pathObjects && pathObjects.distance}
-            </Text>
+            {mapObjects && pathObjects && (
+              <Text style={styles.distance}>
+                ДИСТАНЦИЯ: {pathObjects && pathObjects.distance}
+              </Text>
+            )}
             {mapObjects && pathObjects ? (
               <Animated.View style={[styles.content, animatedStyle]}>
                 <View style={{ ...styles.innerView }}>
@@ -382,7 +384,14 @@ export default function ZoomableMap() {
                       style={styles.image}
                     />
                     <View style={styles.info}>
-                      <Text style={styles.productText}>{product.name}</Text>
+                      {product.golden && (
+                        <Text style={{ ...styles.productText, color: "gold" }}>
+                          {product.name} (златно яйце)
+                        </Text>
+                      )}
+                      {!product.golden && (
+                        <Text style={styles.productText}>{product.name}</Text>
+                      )}
                     </View>
                   </View>
                 </View>

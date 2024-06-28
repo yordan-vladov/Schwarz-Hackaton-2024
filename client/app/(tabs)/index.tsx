@@ -52,7 +52,7 @@ const ProductList = ({ category, products }: ProductListProps) => {
               source={{ uri: item.imageUri }}
               style={styles.productImage}
             />
-            <Text style={styles.productText}>{item.name} {item.productId}</Text>
+            <Text style={styles.productText}>{item.name}</Text>
             <TouchableOpacity
               style={[
                 styles.addButton,
@@ -112,7 +112,6 @@ const Products = () => {
           );
         });
         setGroupedProducts(productsWithImages);
-        console.log(productsWithImages);
       } else {
         console.error("Failed to fetch products:", response.status);
       }
