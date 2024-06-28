@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Define the product type
 interface Product {
-  id: string;
+  productId: string;
   name: string;
   imageUri: string;
 }
@@ -30,7 +30,7 @@ export function CartProvider({ children }: CartProviderProps) {
   const addProduct = (product: Product) => {
     setCart((prevCart) => {
       // Check if the product is already in the cart
-      if (prevCart.some(item => item.id === product.id)) {
+      if (prevCart.some(item => item.productId === product.productId)) {
         return prevCart; // Return the previous cart if the product is already present
       }
       return [...prevCart, product]; // Add the new product
@@ -39,7 +39,7 @@ export function CartProvider({ children }: CartProviderProps) {
 
   // Remove a product from the cart
   const removeProduct = (productId: string) => {
-    setCart((prevCart) => prevCart.filter((product) => product.id !== productId));
+    setCart((prevCart) => prevCart.filter((product) => product.productId !== productId));
   };
 
   // Context value to be provided

@@ -12,21 +12,33 @@ import {
 } from "react-native";
 import Icon from "../../components/Icon";
 import { FontAwesome } from "@expo/vector-icons";
-import { useCart } from '@/providers/CartProvider'; // Adjust the path if necessary
+import axios from 'axios'; // Import axios for API requests
+import { useCart } from '@/providers/CartProvider';
+import {useAuth} from "@/providers/AuthProvider"; // Adjust the path if necessary
+
+interface Product {
+  productId: string;
+  name: string;
+  imageUri: string;
+}
+
+interface GroupedProducts {
+  [category: string]: Product[];
+}
 
 interface ProductListProps {
-    category: string;
-    products: { id: string; name: string; imageUri: string }[];
+  category: string;
+  products: Product[];
 }
 
 const ProductList = ({ category, products }: ProductListProps) => {
   const { cart, addProduct } = useCart();
 
   const isProductInCart = (productId: string) => {
-    return cart.some(product => product.id === productId);
+    return cart.some(product => product.productId === productId);
   };
 
-  const handleAddProduct = (product: { id: string; name: string; imageUri: string }) => {
+  const handleAddProduct = (product: Product) => {
     addProduct(product);
   };
 
@@ -39,19 +51,20 @@ const ProductList = ({ category, products }: ProductListProps) => {
             <Image source={{ uri: item.imageUri }} style={styles.productImage} />
             <Text style={styles.productText}>{item.name}</Text>
             <TouchableOpacity
-              style={[
-                styles.addButton,
-                isProductInCart(item.id) && styles.addedButton
-              ]}
-              onPress={() => handleAddProduct({ id: item.id, name: item.name, imageUri: item.imageUri })}
-              disabled={isProductInCart(item.id)}
-            >
-              {isProductInCart(item.id) ? (
-                <Text style={styles.addedText}>ADDED</Text>
-              ) : (
-                <Icon library="FontAwesome" name="plus" size={20} color="#fff" />
-              )}
-            </TouchableOpacity>
+            style={[
+              styles.addButton,
+              isProductInCart(item.productId) && styles.addedButton
+            ]}
+            onPress={() => handleAddProduct(item)}
+            disabled={isProductInCart(item.productId)}
+
+          >
+            {isProductInCart(item.productId) ? (
+              <Text style={styles.addedText}>ADDED</Text>
+            ) : (
+              <Icon library="FontAwesome" name="plus" size={20} color="#fff" />
+            )}
+          </TouchableOpacity>
           </View>
         ))}
       </View>
@@ -60,41 +73,62 @@ const ProductList = ({ category, products }: ProductListProps) => {
 };
 
 const Products = () => {
-  const [fruits, setFruits] = useState<{ id: string; name: string; imageUri: string }[]>([]);
-  const [meats, setMeats] = useState<{ id: string; name: string; imageUri: string }[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [groupedProducts, setGroupedProducts] = useState<GroupedProducts>({});
+  const { accessToken } = useAuth(); // Adjust this according to your authentication setup
 
   useEffect(() => {
-    // Replace with actual data fetching logic
-    fetchFruits();
-    fetchMeats();
-  }, []);
+    if (accessToken) {
+      fetchProducts();
+    } else {
+      console.error('No access token available');
+    }
+  }, [accessToken]);
 
-  const fetchFruits = async () => {
-    // Fetch fruits from the database
-    const fruitData = [
-      { id: "1", name: "Apple", imageUri: "https://via.placeholder.com/50" },
-      { id: "2", name: "Banana", imageUri: "https://via.placeholder.com/50" },
-      { id: "3", name: "Orange", imageUri: "https://via.placeholder.com/50" },
-      { id: "4", name: "Grapes", imageUri: "https://via.placeholder.com/50" },
-      { id: "5", name: "Pineapple", imageUri: "https://via.placeholder.com/50" },
-      { id: "6", name: "Mango", imageUri: "https://via.placeholder.com/50" },
-      { id: "7", name: "Peach", imageUri: "https://via.placeholder.com/50" },
-    ];
-    setFruits(fruitData);
+  const fetchProducts = async () => {
+    const apiUrl = `${process.env.EXPO_PUBLIC_HOST}/api/v1/products/grouped-by-categories`;
+
+    try {
+      const response = await axios.get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (response.status === 200) {
+        const productsWithImages: GroupedProducts = {};
+        Object.keys(response.data).forEach(category => {
+          productsWithImages[category] = response.data[category].map((product: Product) => ({
+            ...product,
+            imageUri: 'https://via.placeholder.com/50' // Replace with actual imageUri from response
+          }));
+        });
+        setGroupedProducts(productsWithImages);
+        console.log(productsWithImages);
+      } else {
+        console.error('Failed to fetch products:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
   };
 
-  const fetchMeats = async () => {
-    // Fetch meats from the database
-    const meatData = [
-      { id: "1", name: "Chicken", imageUri: "https://via.placeholder.com/50" },
-      { id: "2", name: "Beef", imageUri: "https://via.placeholder.com/50" },
-      { id: "3", name: "Pork", imageUri: "https://via.placeholder.com/50" },
-      { id: "4", name: "Lamb", imageUri: "https://via.placeholder.com/50" },
-      { id: "5", name: "Turkey", imageUri: "https://via.placeholder.com/50" },
-      { id: "6", name: "Fish", imageUri: "https://via.placeholder.com/50" },
-      { id: "7", name: "Duck", imageUri: "https://via.placeholder.com/50" },
-    ];
-    setMeats(meatData);
+  const filteredProducts = () => {
+    if (!searchQuery) {
+      return groupedProducts;
+    }
+
+    const filtered: GroupedProducts = {};
+
+    Object.keys(groupedProducts).forEach((category) => {
+      const products = groupedProducts[category].filter((product) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      if (products.length > 0) {
+        filtered[category] = products;
+      }
+    });
+
+    return filtered;
   };
 
   return (
@@ -110,8 +144,13 @@ const Products = () => {
         <Text style={styles.heading}>Products</Text>
       </View>
       <ScrollView style={styles.scrollView}>
-        <ProductList category="Fruits" products={fruits} />
-        <ProductList category="Meat" products={meats} />
+        {Object.keys(filteredProducts()).map((category) => (
+          <ProductList
+            key={category}
+            category={category}
+            products={filteredProducts()[category]}
+          />
+        ))}
       </ScrollView>
       <Link asChild href="cart">
         <TouchableOpacity style={styles.cart}>

@@ -21,7 +21,7 @@ function AuthLayout() {
           name="index"
           options={{
             title: "ALL PRODUCTS",
-            
+            headerBackVisible: false,
             headerRight: headerProfileButton,
             headerTitleAlign: "center",
             headerBackButtonMenuEnabled: false,
