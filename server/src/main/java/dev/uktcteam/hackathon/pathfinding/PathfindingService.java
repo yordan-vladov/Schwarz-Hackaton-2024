@@ -118,19 +118,16 @@ public class PathfindingService {
         }
 
 
-        ProductDto[] sorted = new ProductDto[shortestRoute.size()-3];
+        ProductDto[] sorted = new ProductDto[shortestRoute.size()];
 
-        for (int i = 0; i < shortestRoute.size()-3; i++) {
+        for (int i = 0; i < shortestRoute.size(); i++) {
             String productId = shortestRoute.get(i);
-
             if (productId.charAt(0) != 'P') {
                 continue;
             }
 
             productId = shortestRoute.get(i).substring(1);
-
             ProductDto product = productService.getProductById(Long.parseLong(productId)); // or productRepository.findById(productId)
-
             sorted[i] = product;
         }
 
