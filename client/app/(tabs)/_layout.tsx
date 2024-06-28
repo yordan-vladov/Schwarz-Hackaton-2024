@@ -15,12 +15,12 @@ function AuthLayout() {
   const { user } = useAuth();
 
   return user ? (
-  <CartProvider>
-    <Stack>
+    <CartProvider>
+      <Stack>
         <Stack.Screen
           name="index"
           options={{
-            title: "ALL PRODUCTS",
+            title: "ПРОДУКТИ",
             headerBackVisible: false,
             headerRight: headerProfileButton,
             headerTitleAlign: "center",
@@ -37,8 +37,8 @@ function AuthLayout() {
         <Stack.Screen
           name="map"
           options={{
-            title: "Map",
-            headerRight: headerProfileButton,
+            headerBackVisible: false,
+            title: "КАРТА",
             headerStyle: {
               backgroundColor: "#009FB7",
             },
@@ -48,7 +48,7 @@ function AuthLayout() {
         <Stack.Screen
           name="cart"
           options={{
-            title: "Cart",
+            title: "КОЛИЧКА",
             headerRight: headerProfileButton,
             headerStyle: {
               backgroundColor: "#009FB7",
@@ -57,18 +57,18 @@ function AuthLayout() {
           }}
         />
 
-      <Stack.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          headerStyle: {
-            backgroundColor: "#009FB7",
-          },
-          headerTintColor: "#FCF7F8",
-        }}
-      />
-    </Stack>
-  </CartProvider>
+        <Stack.Screen
+          name="profile"
+          options={{
+            title: "ПРОФИЛ",
+            headerStyle: {
+              backgroundColor: "#009FB7",
+            },
+            headerTintColor: "#FCF7F8",
+          }}
+        />
+      </Stack>
+    </CartProvider>
   ) : (
     <Redirect href="/(auth)/sign-in" />
   );

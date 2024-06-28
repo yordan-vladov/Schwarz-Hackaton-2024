@@ -16,7 +16,7 @@ const ProfilePage = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.screen}>
         <View style={styles.name}>
-          <Text style={styles.heading}>My Profile</Text>
+          <Text style={styles.heading}>Моят профил</Text>
         </View>
         <View style={styles.info}>
           <Image
@@ -27,28 +27,17 @@ const ProfilePage = () => {
           <Text style={styles.emailText}>{useAuth().user?.email}</Text>
         </View>
         <View style={styles.options}>
-          <View style={styles.option}>
-            <View style={styles.iconContainer}>
-              <Icon library="FontAwesome" name="clipboard" size={30} color="#009FB7" />
-            </View>
-            <View style={styles.nameContainer}>
-              <Text style={styles.optionText}>History</Text>
-            </View>
-          </View>
-          <View style={styles.option}>
-            <View style={styles.iconContainer}>
-              <Icon library="FontAwesome" name="clipboard" size={30} color="#009FB7" />
-            </View>
-            <View style={styles.nameContainer}>
-              <Text style={styles.optionText}>History</Text>
-            </View>
-          </View>
           <View style={[styles.option, styles.logout]}>
             <View style={styles.iconContainer}>
               <Ionicons name="exit-outline" size={30} color="red" />
             </View>
             <View style={styles.nameContainer}>
-              <Text style={[styles.optionText, styles.logout]} onPress={useAuth().signOut}>Logout</Text>
+              <Text
+                style={[styles.optionText, styles.logout]}
+                onPress={useAuth().signOut}
+              >
+                ИЗЛИЗАНЕ
+              </Text>
             </View>
           </View>
         </View>

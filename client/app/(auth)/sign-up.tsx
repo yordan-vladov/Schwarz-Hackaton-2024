@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
+import { TouchableOpacity, StyleSheet, View, Text, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import IconInputField from "../../components/IconInputField";
 import Icon from "../../components/Icon";
@@ -9,7 +9,7 @@ import { useAuth } from "@/providers/AuthProvider";
 
 export default function App() {
   const { signUp } = useAuth();
-  
+
   const [credentials, setCredentials] = useState({
     username: "",
     email: "",
@@ -29,23 +29,50 @@ export default function App() {
     setCredentials({ ...credentials, password: text });
   };
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const handleSubmit = async () => {
-    const response = signUp(credentials.username, credentials.email, credentials.password);
+    // Check if any field is empty
+    if (!credentials.username || !credentials.email || !credentials.password) {
+      Alert.alert("Моля попълнете всички полета!");
+      return;
+    }
+
+    // Validate email format using regex
+    if (!emailRegex.test(credentials.email)) {
+      Alert.alert("Невалиден имейл формат!");
+      return;
+    }
+
+    // Validate password length (must be exactly 8 characters)
+    if (credentials.password.length !== 8) {
+      Alert.alert("Паролата трябва да бъде поне 8 символа дълга!");
+      return;
+    }
+
+    // Proceed with sign-up if all validations pass
+    const response = signUp(
+      credentials.username,
+      credentials.email,
+      credentials.password
+    );
+
     response.then((data: void | { error: string }) => {
       if (data) {
-        console.log(data.error);
+        Alert.alert(data.error);
       } else {
         console.log("Successful");
         router.navigate("(tabs)");
       }
     });
   };
+
   const usernameField = (
     <IconInputField
       key={"username"}
       value={credentials.username}
       onChangeText={handleNameChange}
-      placeholder="Username"
+      placeholder="Потребителско име"
       leftSide={
         <Icon library="FontAwesome" name="user" size={24} color="black" />
       }
@@ -58,7 +85,7 @@ export default function App() {
       key={"email"}
       value={credentials.email}
       onChangeText={handleEmailChange}
-      placeholder="Email"
+      placeholder="Имейл"
       leftSide={
         <Icon library="FontAwesome" name="envelope" size={24} color="black" />
       }
@@ -71,17 +98,14 @@ export default function App() {
       key={"password"}
       value={credentials.password}
       onChangeText={handlePasswordChange}
-      placeholder="Password"
+      placeholder="Парола"
       secureTextEntry={secureEntry}
       style={styles.input}
       leftSide={
         <Icon library="FontAwesome5" name="lock" size={24} color="black" />
       }
       rightSide={
-        <VisiblityToggle
-          state={secureEntry}
-          setState={setSecureEntry}
-        />
+        <VisiblityToggle state={secureEntry} setState={setSecureEntry} />
       }
     />
   );
@@ -116,12 +140,12 @@ export default function App() {
   };
 
   const getActiveField = () => {
-    return fields.filter((field) => field.key === activeFieldKey);
+    return fields.find((field) => field.key === activeFieldKey);
   };
 
   const signUpButton = (
     <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-      <Text style={styles.buttonText}>SIGN UP</Text>
+      <Text style={styles.buttonText}>РЕГИСТРИРАНЕ</Text>
     </TouchableOpacity>
   );
 
@@ -131,7 +155,7 @@ export default function App() {
         style={[styles.button]}
         onPress={() => router.navigate("sign-in")}
       >
-        <Text style={styles.buttonText}>I HAVE AN ACCOUNT</Text>
+        <Text style={styles.buttonText}>ВЕЧЕ ИМАМ АКАУНТ</Text>
       </TouchableOpacity>
     </Link>
   );

@@ -1,16 +1,8 @@
 import React, { useState } from "react";
-import {
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  View,
-  Text,
-  Button,
-} from "react-native";
+import { TouchableOpacity, StyleSheet, View, Text, Alert } from "react-native";
 import { useAuth } from "../../providers/AuthProvider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
-import { AntDesign } from "@expo/vector-icons";
 import IconInputField from "../../components/IconInputField";
 import VisiblityToggle from "../../components/VisibilityToggle";
 import Icon from "../../components/Icon";
@@ -35,7 +27,7 @@ export default function TabOneScreen() {
     const response = signIn(credentials.email, credentials.password);
     response.then((data: void | { error: string }) => {
       if (data) {
-        console.log(data.error);
+        Alert.alert(data.error);
       } else {
         console.log("Successful");
         router.navigate("(tabs)");
@@ -50,12 +42,21 @@ export default function TabOneScreen() {
       <View style={styles.container}>
         {/* <View style={styles.circle} /> */}
         <View style={styles.form}>
-          <Text style={styles.title}>F<Icon library="FontAwesome" name="map-marker" size={30} color="red"/>NDR</Text>
+          <Text style={styles.title}>
+            F
+            <Icon
+              library="FontAwesome"
+              name="map-marker"
+              size={30}
+              color="red"
+            />
+            NDR
+          </Text>
           <View style={styles.inputContainer}>
             <IconInputField
               value={credentials.email}
               onChangeText={handleEmailChange}
-              placeholder="Email"
+              placeholder="Имейл"
               style={styles.input}
               leftSide={
                 <Icon
@@ -69,7 +70,7 @@ export default function TabOneScreen() {
             <IconInputField
               value={credentials.password}
               onChangeText={handlePasswordChange}
-              placeholder="Password"
+              placeholder="Парола"
               secureTextEntry={secureEntry}
               style={styles.input}
               leftSide={
@@ -88,19 +89,22 @@ export default function TabOneScreen() {
               }
             />
             <View style={styles.actionContainer}>
-            <TouchableOpacity style={{...styles.button, marginTop: 20}} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>SIGN IN</Text>
-            </TouchableOpacity>
-            <View style={styles.separatorContainer}>
-              <View style={styles.separator} />
-              <Text style={styles.separatorText}>OR</Text>
-              <View style={styles.separator} />
-            </View>
-            <Link asChild href="(auth)/sign-up">
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>CREATE ACCOUNT</Text>
+              <TouchableOpacity
+                style={{ ...styles.button, marginTop: 20 }}
+                onPress={handleSubmit}
+              >
+                <Text style={styles.buttonText}>ВЛЕЗ</Text>
               </TouchableOpacity>
-            </Link>
+              <View style={styles.separatorContainer}>
+                <View style={styles.separator} />
+                <Text style={styles.separatorText}>ИЛИ</Text>
+                <View style={styles.separator} />
+              </View>
+              <Link asChild href="(auth)/sign-up">
+                <TouchableOpacity style={styles.button}>
+                  <Text style={styles.buttonText}>СЪЗДАЙ АКАУНТ</Text>
+                </TouchableOpacity>
+              </Link>
             </View>
           </View>
         </View>
