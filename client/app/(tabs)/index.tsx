@@ -12,9 +12,9 @@ import {
 } from "react-native";
 import Icon from "../../components/Icon";
 import { FontAwesome } from "@expo/vector-icons";
-import axios from "axios"; // Import axios for API requests
+import axios from "axios";
 import { useCart } from "@/providers/CartProvider";
-import { useAuth } from "@/providers/AuthProvider"; // Adjust the path if necessary
+import { useAuth } from "@/providers/AuthProvider";
 
 interface Product {
   productId: string;
@@ -52,7 +52,7 @@ const ProductList = ({ category, products }: ProductListProps) => {
               source={{ uri: item.imageUri }}
               style={styles.productImage}
             />
-            <Text style={styles.productText}>{item.name}</Text>
+            <Text style={styles.productText}>{item.name} {item.productId}</Text>
             <TouchableOpacity
               style={[
                 styles.addButton,
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
-    marginHorizontal: 5, // Adjust this value to control the spacing between items
+    marginHorizontal: 5,
     borderRadius: 20,
     borderBottomColor: "#009FB7",
     borderWidth: 1,

@@ -32,25 +32,21 @@ export default function App() {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleSubmit = async () => {
-    // Check if any field is empty
     if (!credentials.username || !credentials.email || !credentials.password) {
       Alert.alert("Моля попълнете всички полета!");
       return;
     }
 
-    // Validate email format using regex
     if (!emailRegex.test(credentials.email)) {
       Alert.alert("Невалиден имейл формат!");
       return;
     }
 
-    // Validate password length (must be exactly 8 characters)
     if (credentials.password.length !== 8) {
       Alert.alert("Паролата трябва да бъде поне 8 символа дълга!");
       return;
     }
 
-    // Proceed with sign-up if all validations pass
     const response = signUp(
       credentials.username,
       credentials.email,

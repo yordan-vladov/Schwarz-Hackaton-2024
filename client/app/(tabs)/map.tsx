@@ -54,6 +54,7 @@ export default function ZoomableMap() {
     | {
         distance: number;
         pathfind: any[];
+        sorted: any[];
       }
     | undefined
   >();
@@ -371,19 +372,22 @@ export default function ZoomableMap() {
           </View>
         </GestureDetector>
         <ScrollView style={styles.lowerHalf}>
-          {pathObjects.sorted.map((product) => (
-            <View key={product.productId} style={styles.product}>
-              <View style={styles.productData}>
-                <Image
-                  source={{ uri: product.imageUri }}
-                  style={styles.image}
-                />
-                <View style={styles.info}>
-                  <Text style={styles.productText}>{product.name}</Text>
+          {pathObjects &&
+            pathObjects.sorted.map((product) =>
+              product ? (
+                <View key={product.productId} style={styles.product}>
+                  <View style={styles.productData}>
+                    <Image
+                      source={{ uri: product.imageUri }}
+                      style={styles.image}
+                    />
+                    <View style={styles.info}>
+                      <Text style={styles.productText}>{product.name}</Text>
+                    </View>
+                  </View>
                 </View>
-              </View>
-            </View>
-          ))}
+              ) : null
+            )}
         </ScrollView>
       </GestureHandlerRootView>
     </SafeAreaView>
