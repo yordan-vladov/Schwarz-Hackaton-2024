@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 interface Product {
   id: string;
   name: string;
-  imageURI: string;
+  imageUri: string;
 }
 
 // Define the shape of the context value
@@ -28,7 +28,13 @@ export function CartProvider({ children }: CartProviderProps) {
 
   // Add a product to the cart
   const addProduct = (product: Product) => {
-    setCart((prevCart) => [...prevCart, product]);
+    setCart((prevCart) => {
+      // Check if the product is already in the cart
+      if (prevCart.some(item => item.id === product.id)) {
+        return prevCart; // Return the previous cart if the product is already present
+      }
+      return [...prevCart, product]; // Add the new product
+    });
   };
 
   // Remove a product from the cart

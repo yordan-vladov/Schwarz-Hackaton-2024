@@ -1,53 +1,67 @@
 import IconInputField from "../../components/IconInputField";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   Image,
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
-  Pressable,
 } from "react-native";
 import Icon from "../../components/Icon";
 import { FontAwesome } from "@expo/vector-icons";
+import { useCart } from '@/providers/CartProvider'; // Adjust the path if necessary
 
 interface ProductListProps {
     category: string;
-    products: { name: string; imageUri: string }[];
-    
+    products: { id: string; name: string; imageUri: string }[];
 }
 
-const ProductList = ({ category, products } : ProductListProps) => (
-  <View style={styles.category}>
-    <Text style={styles.subHeading}>{category}</Text>
-    <View style={styles.products}>
-      {products.map((item, index) => (
-        <View style={styles.product} key={index}>
-          <Image source={{ uri: item.imageUri }} style={styles.productImage} />
-          <Text style={styles.productText}>{item.name}</Text>
-          <TouchableOpacity style={styles.addButton}>
-            <Icon library="FontAwesome" name="plus" size={20} color="#fff" />
-          </TouchableOpacity>
-        </View>
-      ))}
-    </View>
-  </View>
-);
+const ProductList = ({ category, products }: ProductListProps) => {
+  const { cart, addProduct } = useCart();
 
-const goToCart = () => {
-  const params = {
-    message: "Hello World!",
+  const isProductInCart = (productId: string) => {
+    return cart.some(product => product.id === productId);
   };
-  router.push({ pathname: "Cart", params: params });
+
+  const handleAddProduct = (product: { id: string; name: string; imageUri: string }) => {
+    addProduct(product);
+  };
+
+  return (
+    <View style={styles.category}>
+      <Text style={styles.subHeading}>{category}</Text>
+      <View style={styles.products}>
+        {products.map((item, index) => (
+          <View style={styles.product} key={index}>
+            <Image source={{ uri: item.imageUri }} style={styles.productImage} />
+            <Text style={styles.productText}>{item.name}</Text>
+            <TouchableOpacity
+              style={[
+                styles.addButton,
+                isProductInCart(item.id) && styles.addedButton
+              ]}
+              onPress={() => handleAddProduct({ id: item.id, name: item.name, imageUri: item.imageUri })}
+              disabled={isProductInCart(item.id)}
+            >
+              {isProductInCart(item.id) ? (
+                <Text style={styles.addedText}>ADDED</Text>
+              ) : (
+                <Icon library="FontAwesome" name="plus" size={20} color="#fff" />
+              )}
+            </TouchableOpacity>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
 };
 
 const Products = () => {
-  const [fruits, setFruits] = useState<{ name: string; imageUri: string }[]>([]);
-  const [meats, setMeats] = useState<{ name: string; imageUri: string }[]>([]);
+  const [fruits, setFruits] = useState<{ id: string; name: string; imageUri: string }[]>([]);
+  const [meats, setMeats] = useState<{ id: string; name: string; imageUri: string }[]>([]);
 
   useEffect(() => {
     // Replace with actual data fetching logic
@@ -58,13 +72,13 @@ const Products = () => {
   const fetchFruits = async () => {
     // Fetch fruits from the database
     const fruitData = [
-      { name: "Apple", imageUri: "https://via.placeholder.com/50" },
-      { name: "Banana", imageUri: "https://via.placeholder.com/50" },
-      { name: "Orange", imageUri: "https://via.placeholder.com/50" },
-      { name: "Grapes", imageUri: "https://via.placeholder.com/50" },
-      { name: "Pineapple", imageUri: "https://via.placeholder.com/50" },
-      { name: "Mango", imageUri: "https://via.placeholder.com/50" },
-      { name: "Peach", imageUri: "https://via.placeholder.com/50" },
+      { id: "1", name: "Apple", imageUri: "https://via.placeholder.com/50" },
+      { id: "2", name: "Banana", imageUri: "https://via.placeholder.com/50" },
+      { id: "3", name: "Orange", imageUri: "https://via.placeholder.com/50" },
+      { id: "4", name: "Grapes", imageUri: "https://via.placeholder.com/50" },
+      { id: "5", name: "Pineapple", imageUri: "https://via.placeholder.com/50" },
+      { id: "6", name: "Mango", imageUri: "https://via.placeholder.com/50" },
+      { id: "7", name: "Peach", imageUri: "https://via.placeholder.com/50" },
     ];
     setFruits(fruitData);
   };
@@ -72,13 +86,13 @@ const Products = () => {
   const fetchMeats = async () => {
     // Fetch meats from the database
     const meatData = [
-      { name: "Chicken", imageUri: "https://via.placeholder.com/50" },
-      { name: "Beef", imageUri: "https://via.placeholder.com/50" },
-      { name: "Pork", imageUri: "https://via.placeholder.com/50" },
-      { name: "Lamb", imageUri: "https://via.placeholder.com/50" },
-      { name: "Turkey", imageUri: "https://via.placeholder.com/50" },
-      { name: "Fish", imageUri: "https://via.placeholder.com/50" },
-      { name: "Duck", imageUri: "https://via.placeholder.com/50" },
+      { id: "1", name: "Chicken", imageUri: "https://via.placeholder.com/50" },
+      { id: "2", name: "Beef", imageUri: "https://via.placeholder.com/50" },
+      { id: "3", name: "Pork", imageUri: "https://via.placeholder.com/50" },
+      { id: "4", name: "Lamb", imageUri: "https://via.placeholder.com/50" },
+      { id: "5", name: "Turkey", imageUri: "https://via.placeholder.com/50" },
+      { id: "6", name: "Fish", imageUri: "https://via.placeholder.com/50" },
+      { id: "7", name: "Duck", imageUri: "https://via.placeholder.com/50" },
     ];
     setMeats(meatData);
   };
@@ -101,12 +115,12 @@ const Products = () => {
       </ScrollView>
       <Link asChild href="cart">
         <TouchableOpacity style={styles.cart}>
-            <Icon
-              library="FontAwesome"
-              name="shopping-cart"
-              size={30}
-              color={"#FCF7F8"}
-            />
+          <Icon
+            library="FontAwesome"
+            name="shopping-cart"
+            size={30}
+            color={"#FCF7F8"}
+          />
         </TouchableOpacity>
       </Link>
     </SafeAreaView>
@@ -128,7 +142,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10
   },
- 
+
   searchInput: {
     width: "90%",
     height: 50,
@@ -210,8 +224,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#009FB7",
     borderRadius: 10,
     marginBottom: 5,
-    width: 30,
+    width: 60,
     height: 30,
+  },
+  addedButton: {
+    backgroundColor: "#00C851", // Change color to indicate the item is added
+  },
+  addedText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
   cart: {
     position: "absolute",
@@ -224,18 +245,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
-  },
-  cartImage: {
-    width: 50,
-    height: 50,
-  },
-  input: {
-    width: "100%",
-    height: 50,
-    borderColor: "gray",
-    borderWidth: 1,
-    borderRadius: 15,
-    backgroundColor: "transparent",
   },
 });
 

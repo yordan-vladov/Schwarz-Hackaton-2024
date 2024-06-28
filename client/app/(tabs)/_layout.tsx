@@ -15,8 +15,8 @@ function AuthLayout() {
   const { user } = useAuth();
 
   return user ? (
+  <CartProvider>
     <Stack>
-      <CartProvider>
         <Stack.Screen
           name="index"
           options={{
@@ -54,7 +54,6 @@ function AuthLayout() {
             headerTintColor: "#FCF7F8",
           }}
         />
-      </CartProvider>
 
       <Stack.Screen
         name="profile"
@@ -67,6 +66,7 @@ function AuthLayout() {
         }}
       />
     </Stack>
+  </CartProvider>
   ) : (
     <Redirect href="/(auth)/sign-in" />
   );
