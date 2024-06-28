@@ -43,7 +43,7 @@ export default function TabOneScreen() {
     });
   };
 
-  const [passwordVisiblity, setPasswordVisibility] = useState(false);
+  const [secureEntry, setSecureEntry] = useState(true);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -70,7 +70,7 @@ export default function TabOneScreen() {
               value={credentials.password}
               onChangeText={handlePasswordChange}
               placeholder="Password"
-              secureTextEntry={passwordVisiblity}
+              secureTextEntry={secureEntry}
               style={styles.input}
               leftSide={
                 <Icon
@@ -82,8 +82,8 @@ export default function TabOneScreen() {
               }
               rightSide={
                 <VisiblityToggle
-                  state={passwordVisiblity}
-                  setState={setPasswordVisibility}
+                  state={secureEntry}
+                  setState={setSecureEntry}
                 />
               }
             />

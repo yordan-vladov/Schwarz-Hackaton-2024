@@ -21,8 +21,10 @@ function AuthLayout() {
           name="index"
           options={{
             title: "ALL PRODUCTS",
+            
             headerRight: headerProfileButton,
             headerTitleAlign: "center",
+            headerBackButtonMenuEnabled: false,
             headerTitleStyle: {
               fontFamily: "JosefineSansBold",
             },

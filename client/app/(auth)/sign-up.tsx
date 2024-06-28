@@ -1,19 +1,21 @@
 import React, { useState } from "react";
 import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AntDesign } from "@expo/vector-icons";
 import IconInputField from "../../components/IconInputField";
 import Icon from "../../components/Icon";
 import VisiblityToggle from "../../components/VisibilityToggle";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
+import { useAuth } from "@/providers/AuthProvider";
 
 export default function App() {
+  const { signUp } = useAuth();
+  
   const [credentials, setCredentials] = useState({
     username: "",
     email: "",
     password: "",
   });
-  const [passwordVisibility, setPasswordVisibility] = useState(true);
+  const [secureEntry, setSecureEntry] = useState(true);
 
   const handleNameChange = (text: string) => {
     setCredentials({ ...credentials, username: text });
@@ -27,15 +29,17 @@ export default function App() {
     setCredentials({ ...credentials, password: text });
   };
 
-  const handleSubmit = () => {
-    console.log("Form submitted", credentials);
+  const handleSubmit = async () => {
+    const response = signUp(credentials.username, credentials.email, credentials.password);
+    response.then((data: void | { error: string }) => {
+      if (data) {
+        console.log(data.error);
+      } else {
+        console.log("Successful");
+        router.navigate("(tabs)");
+      }
+    });
   };
-
-  const handleCreateNewAccount = () => {
-    // Handle create new account logic here
-    console.log("Create New Account");
-  };
-
   const usernameField = (
     <IconInputField
       key={"username"}
@@ -68,15 +72,15 @@ export default function App() {
       value={credentials.password}
       onChangeText={handlePasswordChange}
       placeholder="Password"
-      secureTextEntry={passwordVisibility}
+      secureTextEntry={secureEntry}
       style={styles.input}
       leftSide={
         <Icon library="FontAwesome5" name="lock" size={24} color="black" />
       }
       rightSide={
         <VisiblityToggle
-          state={passwordVisibility}
-          setState={setPasswordVisibility}
+          state={secureEntry}
+          setState={setSecureEntry}
         />
       }
     />
@@ -125,7 +129,7 @@ export default function App() {
     <Link asChild href="(auth)/sign-in" style={styles.button}>
       <TouchableOpacity
         style={[styles.button]}
-        onPress={handleCreateNewAccount}
+        onPress={() => router.navigate("sign-in")}
       >
         <Text style={styles.buttonText}>I HAVE AN ACCOUNT</Text>
       </TouchableOpacity>
@@ -134,13 +138,13 @@ export default function App() {
 
   const nextStepButton = (
     <TouchableOpacity onPress={setActiveFieldToNext}>
-      <AntDesign name="right" size={38} color="black" />
+      <Icon library="AntDesign" name="right" size={38} color="black" />
     </TouchableOpacity>
   );
 
   const previousStepButton = (
     <TouchableOpacity onPress={setActiveFieldToPrevious}>
-      <AntDesign name="left" size={38} color="black" />
+      <Icon library="AntDesign" name="left" size={38} color="black" />
     </TouchableOpacity>
   );
 

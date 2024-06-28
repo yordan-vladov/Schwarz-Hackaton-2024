@@ -1,33 +1,19 @@
 import { Pressable } from 'react-native';
 import Icon from './Icon';
 
-interface VisibilityToggleProps<E> {
+interface VisibilityToggleProps {
     state: boolean,
     setState: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function VisiblityToggle<E>({state, setState}: VisibilityToggleProps<E>) {
-    const handleOff = () => {
-        setState(false);
+export default function VisibilityToggle({ state, setState }: VisibilityToggleProps) {
+    const toggleVisibility = () => {
+        setState(prevState => !prevState);
     };
-    
-    const handleOn = () => {
-        setState(true);
-    };
-
-    const offButton = (
-        <Pressable onPress={handleOff}>
-            <Icon library="Ionicons" name="eye-off" size={30} color="black" />
-        </Pressable>
-    );
-
-    const onButton = (
-        <Pressable onPress={handleOn}>
-            <Icon library="Ionicons" name="eye" size={30} color="black" />
-        </Pressable>
-    );
 
     return (
-        <>{state ? onButton : offButton}</>
-    )
+        <Pressable onPress={toggleVisibility}>
+            <Icon library="Ionicons" name={state ? "eye-off" : "eye"} size={30} color="black" />
+        </Pressable>
+    );
 }
