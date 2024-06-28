@@ -54,4 +54,12 @@ public class ProductService {
         return groupedProducts;
     }
 
+    public ProductDto getProductById(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "Product not found. Please provide a valid product id."
+                        ));
+        return new ProductDto(product);
+    }
 }

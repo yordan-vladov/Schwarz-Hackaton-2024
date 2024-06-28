@@ -1,5 +1,7 @@
 package dev.uktcteam.hackathon.pathfinding;
 
+import dev.uktcteam.hackathon.entities.product.ProductDto;
+import dev.uktcteam.hackathon.entities.product.ProductService;
 import dev.uktcteam.hackathon.pathfinding.logic.CoordinateMatrix;
 import dev.uktcteam.hackathon.pathfinding.logic.HashMapUtils;
 import dev.uktcteam.hackathon.pathfinding.logic.Pair;
@@ -25,6 +27,9 @@ public class PathfindingService {
 
     @Autowired
     private HashMapUtils hashMapUtils;
+
+    @Autowired
+    private ProductService productService;
 
     private HashMap<Pair, Integer> shortestDistances;
     private HashMap<Pair, Integer> productToCheckoutDistances;
@@ -112,9 +117,27 @@ public class PathfindingService {
             pathfind[i] = twoPointPathDto;
         }
 
-        // Create a PathfindDto object and set the pathfind field
+
+        ProductDto[] sorted = new ProductDto[shortestRoute.size()-3];
+
+        for (int i = 0; i < shortestRoute.size()-3; i++) {
+            String productId = shortestRoute.get(i);
+
+            if (productId.charAt(0) != 'P') {
+                continue;
+            }
+
+            productId = shortestRoute.get(i).substring(1);
+
+            ProductDto product = productService.getProductById(Long.parseLong(productId)); // or productRepository.findById(productId)
+
+            sorted[i] = product;
+        }
+
+
         PathfindDto pathfindDto = PathfindDto.builder()
                 .distance(totalDistance)
+                .sorted(sorted)
                 .pathfind(pathfind)
                 .build();
 
