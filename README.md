@@ -34,6 +34,12 @@ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-server -XX:+TieredCompilati
 ```sh
 npm install
 ```
+
+За да се зададе какъв е пътя на endpoint-овете на трябва да се редактира файла: "client/.env".
+```env
+EXPO_PUBLIC_HOST=http://{ip}:{port}
+```
+
 Стартиране на React Native частта от проекта:
 ```
 npm start
