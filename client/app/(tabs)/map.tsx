@@ -187,8 +187,10 @@ export default function ZoomableMap() {
                       ? "#ff5c5c"
                       : item.category === "BlockedPath"
                       ? "red"
-                      : item.category === "Checkout"
+                      : item.category === "Normal Checkout"
                       ? "yellow"
+                      : item.category === "Self Checkout"
+                      ? "green"
                       : consumables.includes(item.category)
                       ? "#d7a1f9"
                       : "#caf0f8",
@@ -379,10 +381,6 @@ export default function ZoomableMap() {
               product ? (
                 <View key={product.productId} style={styles.product}>
                   <View style={styles.productData}>
-                    <Image
-                      source={{ uri: product.imageUri }}
-                      style={styles.image}
-                    />
                     <View style={styles.info}>
                       {product.golden && (
                         <Text style={{ ...styles.productText, color: "gold" }}>
@@ -427,6 +425,7 @@ const styles = StyleSheet.create({
   },
   distance: {
     top: 30,
+    zIndex: 9999,
     fontFamily: "JosefineSansBold",
   },
   product: {
