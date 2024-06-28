@@ -1,22 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  Image,
+  Text,
+  SafeAreaView,
+} from "react-native";
 import {
   GestureHandlerRootView,
   GestureDetector,
   Gesture,
+  ScrollView,
 } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "../../components/Icon";
 import { useAxios } from "../../services/api";
 import { useAuth } from "../../providers/AuthProvider";
 import axios from "axios";
 import qs from "qs";
 import { consumables } from "@/constants/Categories";
+import { useCart } from "@/providers/CartProvider";
+import { router } from "expo-router";
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get("window");
 const gridRows = 20;
@@ -41,322 +51,22 @@ export default function ZoomableMap() {
 
   const [mapObjects, setMapObjects] = useState<MapObject | undefined>();
   const [pathObjects, setPathObjects] = useState<
-    { pathfind: any[] } | undefined
+    | {
+        distance: number;
+        pathfind: any[];
+      }
+    | undefined
   >();
 
   const { refreshAccessToken, signOut } = useAuth();
+  const { cart, clearCart } = useCart();
 
   const axiosInstance = useAxios(refreshAccessToken, signOut);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let products = [
-          "P1",
-          "P10",
-          "P100",
-          "P101",
-          "P102",
-          "P103",
-          "P104",
-          "P105",
-          "P106",
-          "P108",
-          "P109",
-          "P11",
-          "P110",
-          "P111",
-          "P112",
-          "P113",
-          "P114",
-          "P115",
-          "P116",
-          "P117",
-          "P118",
-          "P119",
-          "P12",
-          "P120",
-          "P121",
-          "P122",
-          "P123",
-          "P124",
-          "P125",
-          "P126",
-          "P127",
-          "P128",
-          "P129",
-          "P13",
-          "P130",
-          "P131",
-          "P132",
-          "P133",
-          "P134",
-          "P135",
-          "P136",
-          "P137",
-          "P138",
-          "P139",
-          "P14",
-          "P140",
-          "P141",
-          "P142",
-          "P143",
-          "P144",
-          "P145",
-          "P146",
-          "P147",
-          "P148",
-          "P149",
-          "P15",
-          "P150",
-          "P151",
-          "P152",
-          "P153",
-          "P154",
-          "P155",
-          "P156",
-          "P157",
-          "P158",
-          "P159",
-          "P16",
-          "P160",
-          "P161",
-          "P162",
-          "P163",
-          "P164",
-          "P165",
-          "P166",
-          "P167",
-          "P168",
-          "P169",
-          "P17",
-          "P170",
-          "P171",
-          "P172",
-          "P173",
-          "P174",
-          "P175",
-          "P176",
-          "P177",
-          "P178",
-          "P179",
-          "P18",
-          "P180",
-          "P181",
-          "P182",
-          "P183",
-          "P184",
-          "P185",
-          "P186",
-          "P187",
-          "P188",
-          "P189",
-          "P190",
-          "P191",
-          "P196",
-          "P197",
-          "P198",
-          "P199",
-          "P2",
-          "P20",
-          "P200",
-          "P201",
-          "P202",
-          "P203",
-          "P205",
-          "P206",
-          "P207",
-          "P208",
-          "P209",
-          "P21",
-          "P210",
-          "P211",
-          "P212",
-          "P213",
-          "P214",
-          "P215",
-          "P216",
-          "P217",
-          "P218",
-          "P219",
-          "P22",
-          "P220",
-          "P221",
-          "P222",
-          "P223",
-          "P224",
-          "P225",
-          "P226",
-          "P227",
-          "P228",
-          "P229",
-          "P23",
-          "P230",
-          "P231",
-          "P232",
-          "P233",
-          "P234",
-          "P235",
-          "P236",
-          "P237",
-          "P238",
-          "P239",
-          "P24",
-          "P240",
-          "P241",
-          "P242",
-          "P243",
-          "P244",
-          "P245",
-          "P246",
-          "P247",
-          "P248",
-          "P249",
-          "P25",
-          "P250",
-          "P251",
-          "P252",
-          "P253",
-          "P254",
-          "P255",
-          "P256",
-          "P257",
-          "P258",
-          "P259",
-          "P26",
-          "P260",
-          "P261",
-          "P262",
-          "P263",
-          "P264",
-          "P265",
-          "P266",
-          "P267",
-          "P268",
-          "P269",
-          "P27",
-          "P270",
-          "P271",
-          "P272",
-          "P273",
-          "P274",
-          "P275",
-          "P276",
-          "P277",
-          "P278",
-          "P28",
-          "P280",
-          "P281",
-          "P282",
-          "P283",
-          "P284",
-          "P285",
-          "P286",
-          "P287",
-          "P288",
-          "P289",
-          "P29",
-          "P290",
-          "P291",
-          "P292",
-          "P293",
-          "P294",
-          "P295",
-          "P296",
-          "P297",
-          "P298",
-          "P299",
-          "P3",
-          "P30",
-          "P300",
-          "P301",
-          "P302",
-          "P303",
-          "P304",
-          "P305",
-          "P306",
-          "P307",
-          "P308",
-          "P309",
-          "P31",
-          "P311",
-          "P312",
-          "P313",
-          "P314",
-          "P315",
-          "P316",
-          "P317",
-          "P318",
-          "P319",
-          "P32",
-          "P33",
-          "P34",
-          "P35",
-          "P36",
-          "P37",
-          "P38",
-          "P39",
-          "P4",
-          "P40",
-          "P41",
-          "P42",
-          "P43",
-          "P44",
-          "P45",
-          "P46",
-          "P47",
-          "P48",
-          "P49",
-          "P5",
-          "P50",
-          "P51",
-          "P52",
-          "P53",
-          "P54",
-          "P55",
-          "P56",
-          "P57",
-          "P58",
-          "P59",
-          "P6",
-          "P60",
-          "P61",
-          "P62",
-          "P63",
-          "P64",
-          "P65",
-          "P66",
-          "P67",
-          "P68",
-          "P7",
-          "P73",
-          "P74",
-          "P75",
-          "P76",
-          "P77",
-          "P78",
-          "P79",
-          "P8",
-          "P80",
-          "P81",
-          "P82",
-          "P83",
-          "P84",
-          "P87",
-          "P88",
-          "P89",
-          "P9",
-          "P90",
-          "P91",
-          "P92",
-          "P93",
-          "P94",
-          "P95",
-          "P96",
-          "P97",
-          "P98",
-          "P99"
-        ];
+        const products = cart.map((product) => `P${product.productId}`);
         const pathDataPromise = axiosInstance.get("pathfind/1", {
           params: { products: products.join(",") },
           paramsSerializer: (params) => qs.stringify(params),
@@ -415,6 +125,11 @@ export default function ZoomableMap() {
     translateY.value = withTiming(0);
     savedTranslateX.value = 0;
     savedTranslateY.value = 0;
+  };
+
+  const handleFinish = () => {
+    clearCart();
+    router.navigate("(tabs)");
   };
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -626,13 +341,23 @@ export default function ZoomableMap() {
           gesture={Gesture.Simultaneous(panGesture, pinchGesture)}
         >
           <View style={[styles.upperHalf, { height: screenWidth }]}>
-            <Animated.View style={[styles.content, animatedStyle]}>
-              <View style={{ ...styles.innerView }}>
-                {drawRows()}
-                {drawSquares()}
-                {drawPath()}
+            <Text style={styles.distance}>
+              ДИСТАНЦИЯ: {pathObjects && pathObjects.distance}
+            </Text>
+            {mapObjects && pathObjects ? (
+              <Animated.View style={[styles.content, animatedStyle]}>
+                <View style={{ ...styles.innerView }}>
+                  {drawRows()}
+                  {drawSquares()}
+                  {drawPath()}
+                </View>
+              </Animated.View>
+            ) : (
+              <View>
+                <Text>ЗАРЕЖДАНЕ...</Text>
               </View>
-            </Animated.View>
+            )}
+
             <TouchableOpacity style={styles.recenter} onPress={handleRecenter}>
               <Icon
                 library="FontAwesome6"
@@ -640,11 +365,27 @@ export default function ZoomableMap() {
                 color="black"
               />
             </TouchableOpacity>
+            <TouchableOpacity style={styles.finish} onPress={handleFinish}>
+              <Icon library="FontAwesome6" name="check" color="white" />
+            </TouchableOpacity>
           </View>
         </GestureDetector>
-        <View style={styles.lowerHalf}>
-          {/* Other content for the lower half */}
-        </View>
+        <ScrollView style={styles.lowerHalf}>
+          {cart.map((product) => (
+            <View key={product.productId} style={styles.product}>
+              <View style={styles.productData}>
+                <Image
+                  source={{ uri: product.imageUri }}
+                  style={styles.image}
+                />
+                <View style={styles.info}>
+                  <Text style={styles.productText}>{product.name}</Text>
+                  <Text style={styles.price}>Цена: 0.00 лв.</Text>
+                </View>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
       </GestureHandlerRootView>
     </SafeAreaView>
   );
@@ -654,6 +395,48 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  info: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  productData: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  productInfo: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  image: {
+    height: 50,
+    width: 50,
+  },
+  distance: {
+    top: 30,
+    fontFamily: "JosefineSansBold"
+  },
+  product: {
+    width: "95%",
+    height: "auto",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#FCF7F8",
+    borderRadius: 10,
+    padding: 10,
+    borderColor: "#009FB7",
+    borderWidth: 1,
+    marginBottom: 20,
+    display: "flex",
+    margin: 10,
+  },
+  productText: {
+    fontSize: 18,
+    color: "#009FB7",
+  },
+  price: {},
   gestureContainer: {
     flex: 1,
   },
@@ -661,7 +444,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
+    borderWidth: 0,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
   },
@@ -691,6 +474,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     backgroundColor: "white",
+    justifyContent: "center",
+  },
+  finish: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    width: 50,
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 10,
+    alignItems: "center",
+    backgroundColor: "green",
     justifyContent: "center",
   },
 });

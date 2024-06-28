@@ -1,20 +1,20 @@
 import IconInputField from "../../components/IconInputField";
 import { Link } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
   View,
   Image,
-  ScrollView,
   SafeAreaView,
+  ScrollView,
   TouchableOpacity,
 } from "react-native";
 import Icon from "../../components/Icon";
 import { FontAwesome } from "@expo/vector-icons";
-import axios from 'axios'; // Import axios for API requests
-import { useCart } from '@/providers/CartProvider';
-import {useAuth} from "@/providers/AuthProvider"; // Adjust the path if necessary
+import axios from "axios"; // Import axios for API requests
+import { useCart } from "@/providers/CartProvider";
+import { useAuth } from "@/providers/AuthProvider"; // Adjust the path if necessary
 
 interface Product {
   productId: string;
@@ -35,7 +35,7 @@ const ProductList = ({ category, products }: ProductListProps) => {
   const { cart, addProduct } = useCart();
 
   const isProductInCart = (productId: string) => {
-    return cart.some(product => product.productId === productId);
+    return cart.some((product) => product.productId === productId);
   };
 
   const handleAddProduct = (product: Product) => {
@@ -48,23 +48,30 @@ const ProductList = ({ category, products }: ProductListProps) => {
       <View style={styles.products}>
         {products.map((item, index) => (
           <View style={styles.product} key={index}>
-            <Image source={{ uri: item.imageUri }} style={styles.productImage} />
+            <Image
+              source={{ uri: item.imageUri }}
+              style={styles.productImage}
+            />
             <Text style={styles.productText}>{item.name}</Text>
             <TouchableOpacity
-            style={[
-              styles.addButton,
-              isProductInCart(item.productId) && styles.addedButton
-            ]}
-            onPress={() => handleAddProduct(item)}
-            disabled={isProductInCart(item.productId)}
-
-          >
-            {isProductInCart(item.productId) ? (
-              <Text style={styles.addedText}>ADDED</Text>
-            ) : (
-              <Icon library="FontAwesome" name="plus" size={20} color="#fff" />
-            )}
-          </TouchableOpacity>
+              style={[
+                styles.addButton,
+                isProductInCart(item.productId) && styles.addedButton,
+              ]}
+              onPress={() => handleAddProduct(item)}
+              disabled={isProductInCart(item.productId)}
+            >
+              {isProductInCart(item.productId) ? (
+                <Text style={styles.addedText}>ДОБАВЕНО</Text>
+              ) : (
+                <Icon
+                  library="FontAwesome"
+                  name="plus"
+                  size={20}
+                  color="#fff"
+                />
+              )}
+            </TouchableOpacity>
           </View>
         ))}
       </View>
@@ -73,15 +80,15 @@ const ProductList = ({ category, products }: ProductListProps) => {
 };
 
 const Products = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [groupedProducts, setGroupedProducts] = useState<GroupedProducts>({});
-  const { accessToken } = useAuth(); // Adjust this according to your authentication setup
+  const { accessToken } = useAuth();
 
   useEffect(() => {
     if (accessToken) {
       fetchProducts();
     } else {
-      console.error('No access token available');
+      console.error("No access token available");
     }
   }, [accessToken]);
 
@@ -96,19 +103,21 @@ const Products = () => {
       });
       if (response.status === 200) {
         const productsWithImages: GroupedProducts = {};
-        Object.keys(response.data).forEach(category => {
-          productsWithImages[category] = response.data[category].map((product: Product) => ({
-            ...product,
-            imageUri: 'https://via.placeholder.com/50' // Replace with actual imageUri from response
-          }));
+        Object.keys(response.data).forEach((category) => {
+          productsWithImages[category] = response.data[category].map(
+            (product: Product) => ({
+              ...product,
+              imageUri: "https://via.placeholder.com/50",
+            })
+          );
         });
         setGroupedProducts(productsWithImages);
         console.log(productsWithImages);
       } else {
-        console.error('Failed to fetch products:', response.status);
+        console.error("Failed to fetch products:", response.status);
       }
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error("Error fetching products:", error);
     }
   };
 
@@ -131,17 +140,32 @@ const Products = () => {
     return filtered;
   };
 
+  const handleSearchChange = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchQuery) {
+        fetchProducts();
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery]);
+
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.searchField}>
         <IconInputField
-          placeholder="Search"
+          placeholder="Търси..."
           style={styles.searchInput}
           leftSide={<FontAwesome name="search" size={24} color="black" />}
+          onChangeText={handleSearchChange}
         />
       </View>
       <View style={styles.name}>
-        <Text style={styles.heading}>Products</Text>
+        <Text style={styles.heading}>ПРОДУКТИ</Text>
       </View>
       <ScrollView style={styles.scrollView}>
         {Object.keys(filteredProducts()).map((category) => (
@@ -173,13 +197,12 @@ const styles = StyleSheet.create({
   },
 
   searchField: {
-    height: 60,
+    height: 70,
     paddingHorizontal: 20,
     width: "100%",
     backgroundColor: "#fcf7f8",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 10
   },
 
   searchInput: {
@@ -192,6 +215,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 10,
     paddingHorizontal: 10,
+    marginTop: 10,
     borderBottomColor: "#009FB7",
     borderWidth: 2,
     borderColor: "transparent",
@@ -226,16 +250,17 @@ const styles = StyleSheet.create({
   products: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-around",
+    justifyContent: "flex-start",
     paddingHorizontal: 10,
     backgroundColor: "#FCF7F8",
   },
   product: {
     width: "30%",
     backgroundColor: "#F1F2EB",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
+    marginHorizontal: 5, // Adjust this value to control the spacing between items
     borderRadius: 20,
     borderBottomColor: "#009FB7",
     borderWidth: 1,
@@ -252,7 +277,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   productText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
     marginVertical: 5,
   },
@@ -263,11 +288,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#009FB7",
     borderRadius: 10,
     marginBottom: 5,
-    width: 60,
+    minWidth: 60,
     height: 30,
   },
   addedButton: {
-    backgroundColor: "#00C851", // Change color to indicate the item is added
+    padding: 5,
+    backgroundColor: "#00C851",
   },
   addedText: {
     color: "#fff",

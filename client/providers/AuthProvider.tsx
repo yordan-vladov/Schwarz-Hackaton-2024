@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import * as SecureStore from "expo-secure-store";
 import axios, { AxiosError } from "axios";
-import {router} from "expo-router";
+import { router } from "expo-router";
 
 interface AuthContextType {
   user: User | null;
@@ -89,7 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return { error: error.response?.data };
       } else {
         console.error(error);
-        return { error: "Something else went wrong" };
+        return { error: "Нещо се обърка..." };
       }
     }
   };
@@ -112,20 +112,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         "refreshToken",
         response.data.refresh_token
       );
-      
+
       setUser(response.data.user);
       setAccessToken(response.data.access_token);
       setRefreshToken(response.data.refresh_token);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.data.detail === "Invalid credentials") {
-          return { error: "Incorrect username or password" };
+          return { error: "Невалиден имейл или парола" };
         } else {
           return { error: error.message };
         }
       } else {
         console.error(error);
-        return { error: "Something else went wrong" };
+        return { error: "Нещо се обърка..." };
       }
     }
   };
@@ -137,10 +137,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await SecureStore.deleteItemAsync("user");
     await SecureStore.deleteItemAsync("accessToken");
     await SecureStore.deleteItemAsync("refreshToken");
-    router.navigate("(auth)/sign-in")
-
+    router.navigate("(auth)/sign-in");
   };
-        
+
   const refreshAccessToken = useCallback(
     async (refreshToken: string) => {
       try {

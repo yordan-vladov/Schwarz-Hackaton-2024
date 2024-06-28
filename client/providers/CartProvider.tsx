@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // Define the product type
 interface Product {
@@ -12,6 +12,7 @@ interface CartContextValue {
   cart: Product[];
   addProduct: (product: Product) => void;
   removeProduct: (productId: string) => void;
+  clearCart: () => void;
 }
 
 // Create the Cart context with an undefined default value
@@ -30,7 +31,7 @@ export function CartProvider({ children }: CartProviderProps) {
   const addProduct = (product: Product) => {
     setCart((prevCart) => {
       // Check if the product is already in the cart
-      if (prevCart.some(item => item.productId === product.productId)) {
+      if (prevCart.some((item) => item.productId === product.productId)) {
         return prevCart; // Return the previous cart if the product is already present
       }
       return [...prevCart, product]; // Add the new product
@@ -39,20 +40,24 @@ export function CartProvider({ children }: CartProviderProps) {
 
   // Remove a product from the cart
   const removeProduct = (productId: string) => {
-    setCart((prevCart) => prevCart.filter((product) => product.productId !== productId));
+    setCart((prevCart) =>
+      prevCart.filter((product) => product.productId !== productId)
+    );
   };
 
-  // Context value to be provided
+  const clearCart = () => {
+    setCart([]);
+  };
+
   const contextValue: CartContextValue = {
     cart,
     addProduct,
     removeProduct,
+    clearCart,
   };
 
   return (
-    <CartContext.Provider value={contextValue}>
-      {children}
-    </CartContext.Provider>
+    <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>
   );
 }
 
@@ -60,7 +65,7 @@ export function CartProvider({ children }: CartProviderProps) {
 export function useCart() {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
+    throw new Error("useCart must be used within a CartProvider");
   }
   return context;
 }
