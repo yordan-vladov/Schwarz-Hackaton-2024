@@ -19,7 +19,7 @@ public class UserConfig {
             var admin = RegisterRequest.builder()
                     .username("Admin")
                     .email("admin@uktc.bg")
-                    .password("1234")
+                    .password("Admin1234")
                     .role(Role.ADMIN)
                     .build();
             var authAdmin = authenticationService.registerWithRole(admin);
@@ -30,7 +30,7 @@ public class UserConfig {
             var user = RegisterRequest.builder()
                     .username("Tomov")
                     .email("tomov@abv.bg")
-                    .password("1234")
+                    .password("Tomov1234")
                     .role(Role.USER)
                     .build();
             var authUser = authenticationService.registerWithRole(user);
