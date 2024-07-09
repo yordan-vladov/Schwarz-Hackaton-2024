@@ -4,15 +4,14 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  Image,
   Text,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 import {
   GestureHandlerRootView,
   GestureDetector,
   Gesture,
-  ScrollView,
 } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
@@ -58,6 +57,7 @@ export default function ZoomableMap() {
       }
     | undefined
   >();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const { refreshAccessToken, signOut } = useAuth();
   const { cart, clearCart } = useCart();
@@ -80,7 +80,6 @@ export default function ZoomableMap() {
 
         setPathObjects(pathData.data);
         setMapObjects(productData.data);
-
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
           console.error(error.response.data);
@@ -131,6 +130,12 @@ export default function ZoomableMap() {
   const handleFinish = () => {
     clearCart();
     router.navigate("(tabs)");
+  };
+
+  const handleNextStep = () => {
+    if (pathObjects && currentIndex < pathObjects.pathfind.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
   };
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -232,7 +237,9 @@ export default function ZoomableMap() {
     type RotateType = { rotate: string };
 
     if (pathObjects) {
-      pathObjects.pathfind.forEach((segment, segmentIndex) => {
+      const pathSegments = pathObjects.pathfind.slice(0, currentIndex + 1);
+
+      pathSegments.forEach((segment, segmentIndex) => {
         const segmentPositions = [segment.start, ...segment.path, segment.end];
 
         segmentPositions.forEach((pos, index) => {
@@ -282,13 +289,13 @@ export default function ZoomableMap() {
               };
 
               if (nextPos.y > pos.y && nextPos.x > pos.x) {
-                rotate = { rotate: `-45deg` };
+                rotate = { rotate: "-45deg" };
               } else if (nextPos.y > pos.y && nextPos.x < pos.x) {
-                rotate = { rotate: `-135deg` };
+                rotate = { rotate: "-135deg" };
               } else if (nextPos.y < pos.y && nextPos.x > pos.x) {
-                rotate = { rotate: `45deg` };
+                rotate = { rotate: "45deg" };
               } else if (nextPos.y < pos.y && nextPos.x < pos.x) {
-                rotate = { rotate: `135deg` };
+                rotate = { rotate: "135deg" };
               }
             }
 
@@ -332,9 +339,9 @@ export default function ZoomableMap() {
           />
         );
       });
-
-      return [...lines, ...circles];
     }
+
+    return [...lines, ...circles];
   };
 
   return (
@@ -372,6 +379,9 @@ export default function ZoomableMap() {
             </TouchableOpacity>
             <TouchableOpacity style={styles.finish} onPress={handleFinish}>
               <Icon library="FontAwesome6" name="check" color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.nextStep} onPress={handleNextStep}>
+              <Text>Next Step</Text>
             </TouchableOpacity>
           </View>
         </GestureDetector>
@@ -497,6 +507,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     backgroundColor: "green",
+    justifyContent: "center",
+  },
+  nextStep: {
+    position: "absolute",
+    bottom: 10,
+    right: 70,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderRadius: 10,
+    alignItems: "center",
+    backgroundColor: "#009FB7",
     justifyContent: "center",
   },
 });
