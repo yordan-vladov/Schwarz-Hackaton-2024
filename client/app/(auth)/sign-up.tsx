@@ -42,7 +42,7 @@ export default function App() {
       return;
     }
 
-    if (credentials.password.length !== 8) {
+    if (credentials.password.length < 8) {
       Alert.alert("Паролата трябва да бъде поне 8 символа дълга!");
       return;
     }
